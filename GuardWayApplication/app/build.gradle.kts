@@ -1,3 +1,5 @@
+import org.gradle.api.JavaVersion
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,14 +8,12 @@ plugins {
 
 android {
     namespace = "com.example.guardwayapplication"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.guardwayapplication"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -44,11 +44,14 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
+
+    //Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
 }
