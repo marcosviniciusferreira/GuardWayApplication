@@ -11,9 +11,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.maps.CameraUpdateFactory // <--- Adicionado
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback // <--- IMPORTANTE: Adicionado para o callback do mapa
+import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var googleMap: GoogleMap? = null // <--- MUDANÇA 2: Variável para armazenar a referência do mapa
+    private var googleMap: GoogleMap? = null
 
     private var places = mutableListOf(
         Place("", LatLng(0.0, 0.0), "", 0.0f)
@@ -64,14 +64,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     // Função para adicionar marcadores
-    private fun addMarkers() { // <--- MUDANÇA 5: Não recebe mais o GoogleMap como parâmetro, usa a variável de classe
+    private fun addMarkers() {
         val map = this.googleMap ?: return // Verifica se o mapa está pronto
-        map.clear() // <--- MUDANÇA 6: Limpa os marcadores existentes antes de adicionar os novos
+        map.clear() // Limpa os marcadores existentes antes de adicionar os novos
 
         var userLatLng: LatLng? = null // Variável para armazenar a localização do usuário, se existir
 
         places.forEach { place ->
-            val marker = map.addMarker( // <--- MUDANÇA 7: Usa a variável 'map'
+            val marker = map.addMarker( // Usa a variável 'map'
                 MarkerOptions()
                     .title(place.name)
                     .snippet(place.address)
@@ -95,7 +95,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(places.first().latLng, DEFAULT_ZOOM))
         }
     }
-
 
     private fun requestLocationPermission() {
         // 1. Verifica se a permissão de localização (precisa) já foi concedida.

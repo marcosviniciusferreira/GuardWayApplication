@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">GuardWayApplication</string>
     <string name="map_id">4dc0ecc891c3946a22d16667</string>
+    <string name="api_key">AIzaSyCuUyAV8yqeNBatJcxGUv-nJKC7OChYZLM</string>
 </resources>
