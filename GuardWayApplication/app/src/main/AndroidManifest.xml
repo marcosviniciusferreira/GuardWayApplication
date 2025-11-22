@@ -17,10 +17,6 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
-            android:exported="false"/>
-
-        <activity
-            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,9 +24,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"/>
+
+
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="api_key" />
+            android:value="@string/api_key" />
     </application>
 
 </manifest>

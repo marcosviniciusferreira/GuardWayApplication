@@ -18,22 +18,24 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.tasks.CancellationTokenSource
 
-
-// <--- MUDANÇA 1: Implementar OnMapReadyCallback
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     companion object {
         private const val PERMISSION_REQUEST_CODE = 100
-        private const val DEFAULT_ZOOM = 15f // <--- Adicionado para centralizar a câmera
+        private const val DEFAULT_ZOOM = 15f
+        // Adicionado para usar no getCurrentLocation()
+        // ATENÇÃO: Se não estiver definido, você precisará criá-lo.
+        private const val LOCATION_PRIORITY = com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var googleMap: GoogleMap? = null
 
-    private var places = mutableListOf(
-        Place("", LatLng(0.0, 0.0), "", 0.0f)
-    )
+    // Removendo o item padrão para evitar que o mapa centralize em (0, 0)
+    private var places = mutableListOf<Place>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,94 +53,150 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // 2. Chame a função para solicitar a permissão
         requestLocationPermission()
 
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
-        // <--- MUDANÇA 3: Iniciar o carregamento do mapa, associando esta activity como callback
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
-    // <--- MUDANÇA 4: Método do OnMapReadyCallback. O mapa só está pronto para uso aqui.
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap // Armazena a referência do mapa
-        addMarkers() // Chama para adicionar todos os lugares conhecidos (Parque Ibirapuera)
-        // O getLastKnownLocation() se encarregará de adicionar e atualizar os marcadores quando a permissão for concedida.
+        // O mapa está pronto. Se a permissão já foi dada, a localização será carregada.
+        // Se a localização já foi obtida (antes do mapa estar pronto), 'places' será atualizada.
+        addMarkers()
     }
 
-    // Função para adicionar marcadores
     private fun addMarkers() {
-        val map = this.googleMap ?: return // Verifica se o mapa está pronto
-        map.clear() // Limpa os marcadores existentes antes de adicionar os novos
+        val map = this.googleMap ?: return // Garante que o mapa não é nulo antes de prosseguir
+        map.clear()
 
-        var userLatLng: LatLng? = null // Variável para armazenar a localização do usuário, se existir
+        var userLatLng: LatLng? = null
 
         places.forEach { place ->
-            val marker = map.addMarker( // Usa a variável 'map'
+            map.addMarker(
                 MarkerOptions()
                     .title(place.name)
                     .snippet(place.address)
                     .position(place.latLng)
-                // TODO: Certifique-se de que BitmapHelper e R.drawable.ic_android_black_24dp estão definidos corretamente.
-                // O BitmapHelper não está definido neste código, mas vamos supor que exista.
-                // Caso contrário, use o padrão: .icon(BitmapDescriptorFactory.defaultMarker())
-                // .icon(BitmapHelper.vectorToBitmap(this, R.drawable.ic_android_black_24dp, ContextCompat.getColor(this, R.color.black)))
             )
-            // Se for o marcador do usuário, guarda a posição para centralizar a câmera
+
             if (place.name == "Sua Localização") {
                 userLatLng = place.latLng
+                // Habilita o indicador de localização do Google Maps, se permitido
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED) {
+                    map.isMyLocationEnabled = true
+                }
             }
         }
 
-        // <--- MUDANÇA 8: Centraliza a câmera no último marcador adicionado ou em uma posição padrão
+        // Centraliza a câmera na localização do usuário
         if (userLatLng != null) {
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng!!, DEFAULT_ZOOM))
         } else if (places.isNotEmpty()) {
-            // Se não encontrou o usuário, centraliza no primeiro item da lista, por exemplo
+            // Caso especial: centraliza em outro marcador, se houver
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(places.first().latLng, DEFAULT_ZOOM))
         }
     }
 
     private fun requestLocationPermission() {
-        // 1. Verifica se a permissão de localização (precisa) já foi concedida.
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
 
-            // 2. A permissão NÃO está concedida, então o app a solicita ao usuário.
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
                 PERMISSION_REQUEST_CODE
             )
         } else {
-            // 3. A permissão JÁ está concedida, então o app pode prosseguir.
-            getLastKnownLocation()
+            // Permissão JÁ está concedida, solicita a localização atual.
+            getCurrentLocation()
         }
     }
 
-    // <--- MUDANÇA 9: Tratamento do resultado da solicitação de permissão
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    // CORREÇÃO: Estrutura lógica do if/else/catch.
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permissão concedida.
-                getLastKnownLocation()
+                getCurrentLocation()
             } else {
-                // Permissão negada. Lidar com o caso (ex: mostrar uma mensagem)
+                // Permissão negada.
                 Log.d("Location", "Permissão de localização negada pelo usuário.")
+                // Opcional: Centralizar o mapa em uma localização padrão (ex: São Paulo)
+                if (googleMap != null) {
+                    val saoPaulo = LatLng(-23.5505, -46.6333)
+                    googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(saoPaulo, DEFAULT_ZOOM))
+                }
             }
         }
     }
 
 
-    private fun getLastKnownLocation() {
-        // Bloco de verificação de permissão de segurança (necessário antes de qualquer chamada de localização).
+    private fun getCurrentLocation() {
+        // 1. Verificação de Permissão (Obrigatória)
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ) != PackageManager.PERMISSION_GRANTED) {
+            // Se a permissão não foi concedida, retorna e a solicita (para garantir que não pare o app)
+            requestLocationPermission()
+            return
+        }
+
+        // 2. Cria o token de cancelamento
+        val cancellationTokenSource = CancellationTokenSource()
+
+        // 3. Solicita a localização atual (Alta precisão, uma única vez)
+        fusedLocationClient.getCurrentLocation(
+            LOCATION_PRIORITY, // Usando a constante definida em Companion Object
+            cancellationTokenSource.token
+        )
+            .addOnSuccessListener { location ->
+                if (location != null) {
+                    val userLatLng = LatLng(location.latitude, location.longitude)
+
+                    // Remove o marcador antigo
+                    places.removeAll { it.name == "Sua Localização" }
+
+                    // Cria e adiciona o novo marcador
+                    val userPlace = Place(
+                        name = "Sua Localização",
+                        latLng = userLatLng,
+                        address = "Você está aqui!",
+                        rating = 5.0f
+                    )
+                    places.add(userPlace)
+
+                    Log.d("Location", "Localização atual OBTIDA com sucesso: $userLatLng")
+                    addMarkers() // Atualiza o mapa com o novo local e centraliza
+
+                } else {
+                    Log.d("Location", "getCurrentLocation retornou nulo. Tentando fallback...")
+                    // Tenta a última localização conhecida como fallback
+                    getLastKnownLocationFallback()
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Location", "Erro ao obter localização atual: ${e.message}")
+                getLastKnownLocationFallback() // Tenta fallback em caso de erro
+            }
+    }
+
+    // 4. Fallback: Tenta a última localização (função antiga renomeada)
+    private fun getLastKnownLocationFallback() {
+        // Bloco de verificação de permissão (Obrigatório antes da chamada).
+        // Não deveria acontecer aqui, mas é uma proteção.
+        if (ActivityCompat.checkSelfPermission(
                 this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Se a permissão não foi concedida, retorna (embora isso não deva acontecer se requestLocationPermission for chamada corretamente).
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED) {
             return
         }
 
@@ -146,31 +204,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             .addOnSuccessListener { location ->
                 if (location != null) {
                     val userLatLng = LatLng(location.latitude, location.longitude)
-
-                    // Encontra e remove um possível marcador de localização do usuário antigo
-                    places.removeAll { it.name == "Sua Localização" } // <--- MUDANÇA 10: Remove a localização anterior antes de adicionar a nova
-
+                    places.removeAll { it.name == "Sua Localização" }
                     val userPlace = Place(
                         name = "Sua Localização",
                         latLng = userLatLng,
                         address = "Você está aqui!",
                         rating = 5.0f
                     )
-
-                    // 4. Adiciona o novo lugar (a localização do usuário) à lista mutável 'places'.
                     places.add(userPlace)
-
-                    Log.d("Location", "Localização do usuário adicionada: $userLatLng")
-
-                    // <--- MUDANÇA 11: CHAMA addMarkers() para ATUALIZAR o mapa.
-                    // Isso garante que o marcador só seja adicionado DEPOIS que a localização for conhecida.
+                    Log.d("Location", "Localização de fallback OBTIDA: $userLatLng")
                     addMarkers()
-
                 } else {
-                    Log.d("Location", "A última localização conhecida é nula.")
+                    Log.d("Location", "Localização de fallback também é nula.")
                 }
             }
+            .addOnFailureListener { e ->
+                Log.e("Location", "Erro no fallback de localização: ${e.message}")
+            }
     }
+
 }
 
 data class Place(

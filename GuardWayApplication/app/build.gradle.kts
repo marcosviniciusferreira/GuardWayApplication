@@ -18,6 +18,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // 1. Lê a variável do local.properties (ou define um valor de fallback se não for encontrada)
+        val mapsApiKey = project.findProperty("MAPS_API_KEY") as String? ?: "CHAVE_PADRAO_OU_VAZIA"
+
+        // 2. Injeta a chave como uma string resource chamada "map_api_key" (ou o nome que você usará)
+        resValue("string", "api_key", mapsApiKey)
     }
 
     buildTypes {
