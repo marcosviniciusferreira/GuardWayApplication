@@ -62,36 +62,41 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         this.googleMap = googleMap // Armazena a referência do mapa
         // O mapa está pronto. Se a permissão já foi dada, a localização será carregada.
         // Se a localização já foi obtida (antes do mapa estar pronto), 'places' será atualizada.
-        addMarkers()
+        getUserLocation()
     }
 
-    private fun addMarkers() {
-        val map = this.googleMap ?: return // Garante que o mapa não é nulo antes de prosseguir
-        map.clear()
+    private fun getUserLocation() {
+        val map = this.googleMap ?: return
+        map.clear() // Limpa todos os marcadores existentes (incluindo o anterior do usuário, se houver)
 
         var userLatLng: LatLng? = null
 
         places.forEach { place ->
-            map.addMarker(
-                MarkerOptions()
-                    .title(place.name)
-                    .snippet(place.address)
-                    .position(place.latLng)
-            )
-
+            // NOVO: Se o nome for "Sua Localização", não adicione o marcador customizado
             if (place.name == "Sua Localização") {
-                userLatLng = place.latLng
-                // Habilita o indicador de localização do Google Maps, se permitido
+                userLatLng = place.latLng // Ainda armazena a localização para centralizar a câmera
+
+                // Habilita o indicador de localização nativo do Google Maps (o ponto azul)
                 if (ActivityCompat.checkSelfPermission(
                         this,
                         Manifest.permission.ACCESS_FINE_LOCATION
                     ) == PackageManager.PERMISSION_GRANTED) {
                     map.isMyLocationEnabled = true
                 }
+                // Não chame map.addMarker() para esta localização!
+
+            } else {
+                // Se for qualquer outro lugar (marcador de destino, etc.), adicione o marcador
+                map.addMarker(
+                    MarkerOptions()
+                        .title(place.name)
+                        .snippet(place.address)
+                        .position(place.latLng)
+                )
             }
         }
 
-        // Centraliza a câmera na localização do usuário
+        // Centraliza a câmera na localização do usuário ou em outro marcador
         if (userLatLng != null) {
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng!!, DEFAULT_ZOOM))
         } else if (places.isNotEmpty()) {
@@ -175,7 +180,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     places.add(userPlace)
 
                     Log.d("Location", "Localização atual OBTIDA com sucesso: $userLatLng")
-                    addMarkers() // Atualiza o mapa com o novo local e centraliza
+                    getUserLocation() // Atualiza o mapa com o novo local e centraliza
 
                 } else {
                     Log.d("Location", "getCurrentLocation retornou nulo. Tentando fallback...")
@@ -213,7 +218,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     )
                     places.add(userPlace)
                     Log.d("Location", "Localização de fallback OBTIDA: $userLatLng")
-                    addMarkers()
+                    getUserLocation()
                 } else {
                     Log.d("Location", "Localização de fallback também é nula.")
                 }

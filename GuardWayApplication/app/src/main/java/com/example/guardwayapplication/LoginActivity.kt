@@ -102,4 +102,6 @@ class LoginActivity : AppCompatActivity() {
             @Query("senha") senha: String
         ): Call<List<LoginResponse>>
     }
+
+
 }

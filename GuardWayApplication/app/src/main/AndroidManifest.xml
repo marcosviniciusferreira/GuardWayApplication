@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.guardwayapplication"> <uses-permission android:name="android.permission.INTERNET" />
+    package="com.example.guardwayapplication">
+
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -16,19 +18,42 @@
         android:theme="@style/Theme.GuardWayApplication"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Adapter"
+            android:exported="false"
+            android:theme="@style/Theme.GuardWayApplication" />
+        <activity
+            android:name=".getListaProdutos"
+            android:exported="false" />
+        <activity
+            android:name=".CustomAdapter"
+            android:exported="false" />
+        <activity
+            android:name=".Produto"
+            android:exported="false" />
+        <activity
+            android:name=".ApiService"
+            android:exported="false" />
+        <activity
+            android:name=".KTActivity"
+            android:exported="false" />
+        <activity
+            android:name=".recyclerViewProdutos"
+            android:exported="false" />
+        <activity
+            android:name=".RetrofitClient"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".LoginActivity"
-            android:exported="false"/>
-
-
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
