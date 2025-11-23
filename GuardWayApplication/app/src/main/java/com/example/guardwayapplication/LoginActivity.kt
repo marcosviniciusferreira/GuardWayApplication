@@ -11,7 +11,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 // ----------------------------------------------------
@@ -102,9 +104,17 @@ class LoginActivity : AppCompatActivity() {
             @Query("senha") senha: String
         ): Call<List<LoginResponse>>
 
-        @GET("/apis/get_usuario.php") // ATENÇÃO: Corrija o caminho da sua API
+        @GET("/apis/get_usuarios.php") // Corrigido o endpoint
         fun getUsuarios(): Call<List<Usuario>>
+
+        @DELETE("/apis/delete_usuario.php")
+        fun deleteUsuario(@Query("id") userId: Int): Call<Void>
+//
+//        @POST("php_action/create_usuario.php")
+//        fun createUsuario(@Body usuario: Usuario): Call<SuccessResponse> // Usando o objeto Usuario para criar
+//
+//        // PUT/PATCH é mais semântico para edição
+//        @PUT("php_action/update_usuario.php")
+//        fun updateUsuario(@Body usuario: Usuario): Call<SuccessResponse>
     }
-
-
 }
