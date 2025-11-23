@@ -101,6 +101,9 @@ class LoginActivity : AppCompatActivity() {
             @Query("usuario") usuario: String,
             @Query("senha") senha: String
         ): Call<List<LoginResponse>>
+
+        @GET("/apis/get_usuario.php") // ATENÇÃO: Corrija o caminho da sua API
+        fun getUsuarios(): Call<List<Usuario>>
     }
 
 
