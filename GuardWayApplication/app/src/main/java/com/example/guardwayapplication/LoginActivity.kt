@@ -96,25 +96,4 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
-
-    interface ApiService {
-        @GET("/apis/login.php")
-        fun login(
-            @Query("usuario") usuario: String,
-            @Query("senha") senha: String
-        ): Call<List<LoginResponse>>
-
-        @GET("/apis/get_usuarios.php") // Corrigido o endpoint
-        fun getUsuarios(): Call<List<Usuario>>
-
-        @DELETE("/apis/delete_usuario.php")
-        fun deleteUsuario(@Query("id") userId: Int): Call<Void>
-//
-//        @POST("php_action/create_usuario.php")
-//        fun createUsuario(@Body usuario: Usuario): Call<SuccessResponse> // Usando o objeto Usuario para criar
-//
-//        // PUT/PATCH é mais semântico para edição
-//        @PUT("php_action/update_usuario.php")
-//        fun updateUsuario(@Body usuario: Usuario): Call<SuccessResponse>
-    }
 }

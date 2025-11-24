@@ -1,4 +1,3 @@
-// src/main/java/com/example/guardwayapplication/UserAdapter.kt
 package com.example.guardwayapplication
 
 import android.view.LayoutInflater
@@ -8,11 +7,13 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-// Interface to handle click events on items
+// Interface para lidar com os eventos de clique nos itens
 interface OnUserActionsListener {
     fun onUserDelete(userId: Int, position: Int)
-    // You can add other actions here, like editing
-    // fun onUserEdit(userId: Int)
+    fun onUserEdit(usuario: Usuario)
+
+    fun onUserAdd(usuario: Usuario)
+
 }
 
 class UserAdapter(
@@ -23,14 +24,14 @@ class UserAdapter(
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val nome: TextView = view.findViewById(R.id.nomeUsuario)
         val email: TextView = view.findViewById(R.id.emailUsuario)
-        // Corrected the button IDs. Please ensure these IDs match your XML layout.
         val btnExcluir: ImageButton = view.findViewById(R.id.btnExcluir)
         val btnEditar: ImageButton = view.findViewById(R.id.btnEditar)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        // Infla o layout CORRETO para um item da lista
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_usuario, parent, false) // Ensure you have an 'item_usuario.xml' layout file
+            .inflate(R.layout.item_usuario, parent, false)
         return ViewHolder(view)
     }
 
@@ -39,15 +40,14 @@ class UserAdapter(
         viewHolder.nome.text = usuario.USUARIO_NOME
         viewHolder.email.text = usuario.USUARIO_EMAIL
 
+        // Listeners separados para cada botão
         viewHolder.btnExcluir.setOnClickListener {
-            // Assuming 'USUARIO_ID' exists in your Usuario class to be consistent with other fields.
             listener.onUserDelete(usuario.USUARIO_ID, position)
         }
 
-        // Example for edit button
-        // viewHolder.btnEditar.setOnClickListener {
-        //     listener.onUserEdit(usuario.USUARIO_ID)
-        // }
+        viewHolder.btnEditar.setOnClickListener {
+            listener.onUserEdit(usuario)
+        }
     }
 
     override fun getItemCount() = dataSet.size
@@ -55,7 +55,9 @@ class UserAdapter(
     fun removeUser(position: Int) {
         if (position >= 0 && position < dataSet.size) {
             dataSet.removeAt(position)
-            notifyItemRemoved(position) // Notifica o RecyclerView da remoção
+            notifyItemRemoved(position)
+            // Notifica o adapter que o range de itens mudou, para evitar crashes
+            notifyItemRangeChanged(position, dataSet.size)
         }
     }
 }
