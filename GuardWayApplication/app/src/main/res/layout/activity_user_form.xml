@@ -15,7 +15,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="24dp"
-        android:text="Editar Usuario"/>
+        android:text="Criar Usuario"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
         android:layout_marginBottom="16dp"
         android:hint="Nome Completo">
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editNome"
+            android:id="@+id/txtNome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"/>
@@ -35,7 +35,7 @@
         android:layout_marginBottom="16dp"
         android:hint="Email">
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editEmail"
+            android:id="@+id/txtEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"/>
@@ -47,11 +47,33 @@
         android:layout_marginBottom="24dp"
         android:hint="CPF">
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editCpf"
+            android:id="@+id/txtCpf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"/>
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:hint="Senha">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/txtSenha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- NOVO BOTÃO DE VOLTAR -->
+    <Button
+        android:id="@+id/btnVoltar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:textColor="@color/white"
+        android:text="VOLTAR"
+        android:layout_marginBottom="8dp"/>
 
     <Button
         android:id="@+id/btnSalvar"

@@ -7,13 +7,10 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-// Interface para lidar com os eventos de clique nos itens
 interface OnUserActionsListener {
     fun onUserDelete(userId: Int, position: Int)
     fun onUserEdit(usuario: Usuario)
-
     fun onUserAdd(usuario: Usuario)
-
 }
 
 class UserAdapter(
