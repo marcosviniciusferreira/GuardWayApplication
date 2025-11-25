@@ -2,6 +2,7 @@ package com.example.guardwayapplication
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +21,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.tasks.CancellationTokenSource
+import java.util.Locale
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -33,6 +35,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var googleMap: GoogleMap? = null
+
+    // Váriaveis para armazenar as coordenadas solicitadas pelo usuário
+    private var currentLatitude: Double? = null
+    private var currentLongitude: Double? = null
+    private var currentCEP: String? = null // Váriavel para armazenar o CEP encontrado
 
     // Removendo o item padrão para evitar que o mapa centralize em (0, 0)
     private var places = mutableListOf<Place>()
@@ -158,19 +165,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // 2. Cria o token de cancelamento
         val cancellationTokenSource = CancellationTokenSource()
 
-        // 3. Solicita a localização atual (Alta precisão, uma única vez)
+        // 3. Solicita a localização atual
         fusedLocationClient.getCurrentLocation(
-            LOCATION_PRIORITY, // Usando a constante definida em Companion Object
+            LOCATION_PRIORITY,
             cancellationTokenSource.token
         )
             .addOnSuccessListener { location ->
                 if (location != null) {
                     val userLatLng = LatLng(location.latitude, location.longitude)
 
-                    // Remove o marcador antigo
-                    places.removeAll { it.name == "Sua Localização" }
+                    // --- NOVA LÓGICA: Armazena e Processa Coordenadas ---
+                    currentLatitude = location.latitude
+                    currentLongitude = location.longitude
 
-                    // Cria e adiciona o novo marcador
+                    Log.d("Location", "Coordenadas salvas: $currentLatitude, $currentLongitude")
+                    performReverseGeocoding(currentLatitude!!, currentLongitude!!)
+                    // ---------------------------------------------------
+
+                    // Remove e adiciona o novo marcador (para atualização do mapa)
+                    places.removeAll { it.name == "Sua Localização" }
                     val userPlace = Place(
                         name = "Sua Localização",
                         latLng = userLatLng,
@@ -184,20 +197,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 } else {
                     Log.d("Location", "getCurrentLocation retornou nulo. Tentando fallback...")
-                    // Tenta a última localização conhecida como fallback
                     getLastKnownLocationFallback()
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("Location", "Erro ao obter localização atual: ${e.message}")
-                getLastKnownLocationFallback() // Tenta fallback em caso de erro
+                getLastKnownLocationFallback()
             }
     }
 
-    // 4. Fallback: Tenta a última localização (função antiga renomeada)
+    // Fallback: Tenta a última localização
     private fun getLastKnownLocationFallback() {
-        // Bloco de verificação de permissão (Obrigatório antes da chamada).
-        // Não deveria acontecer aqui, mas é uma proteção.
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -209,6 +219,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             .addOnSuccessListener { location ->
                 if (location != null) {
                     val userLatLng = LatLng(location.latitude, location.longitude)
+
+                    // --- NOVA LÓGICA: Armazena e Processa Coordenadas ---
+                    currentLatitude = location.latitude
+                    currentLongitude = location.longitude
+
+                    Log.d("Location", "Coordenadas salvas (Fallback): $currentLatitude, $currentLongitude")
+                    performReverseGeocoding(currentLatitude!!, currentLongitude!!)
+                    // ---------------------------------------------------
+
                     places.removeAll { it.name == "Sua Localização" }
                     val userPlace = Place(
                         name = "Sua Localização",
@@ -228,6 +247,48 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
     }
 
+    private fun performReverseGeocoding(lat: Double, lon: Double) {
+        // Verifica se a classe Geocoder está disponível no dispositivo
+        if (!Geocoder.isPresent()) {
+            Log.e("Geocoder", "Geocoder não está disponível neste dispositivo.")
+            currentCEP = null
+            return
+        }
+
+        // Tenta obter o CEP
+        try {
+            val geocoder = Geocoder(this, Locale("pt", "BR"))
+            // Máximo de 1 resultado é suficiente
+            val addresses = geocoder.getFromLocation(lat, lon, 1)
+
+            if (!addresses.isNullOrEmpty()) {
+                val address = addresses[0]
+
+                // O método getPostalCode() retorna o CEP
+                val postalCode = address.postalCode
+
+                if (postalCode != null) {
+                    currentCEP = postalCode
+                    Log.i("Geocoder", "CEP encontrado: $currentCEP")
+                    Log.i("Geocoder", "Endereço completo: ${address.getAddressLine(0)}")
+
+                    // A PARTIR DAQUI, VOCÊ PODE INICIAR A CONSULTA AO SEU BANCO DE DADOS
+                    // Exemplo:
+                    // checkDatabaseForCEP(currentCEP!!, currentLatitude!!, currentLongitude!!)
+
+                } else {
+                    currentCEP = null
+                    Log.w("Geocoder", "CEP não encontrado para estas coordenadas.")
+                }
+            } else {
+                currentCEP = null
+                Log.w("Geocoder", "Nenhum endereço encontrado para as coordenadas.")
+            }
+        } catch (e: Exception) {
+            currentCEP = null
+            Log.e("Geocoder", "Erro no Geocoding: ${e.message}")
+        }
+    }
 }
 
 data class Place(
