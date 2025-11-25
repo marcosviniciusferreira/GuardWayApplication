@@ -1,4 +1,5 @@
 import com.example.guardwayapplication.LoginResponse
+import com.example.guardwayapplication.Ocorrencia
 import com.example.guardwayapplication.Usuario
 import retrofit2.Call
 import retrofit2.http.Body
@@ -16,6 +17,7 @@ interface ApiService {
         @Query("senha") senha: String
     ): Call<List<LoginResponse>>
 
+    //-------------------- CRUD PARA USUARIOS --------------------
     @GET("/apis/get_usuarios.php")
     fun getUsuarios(): Call<List<Usuario>>
 
@@ -30,7 +32,22 @@ interface ApiService {
     @POST("/apis/create_usuario.php")
     fun createUsuario(@Body usuario: Usuario): Call<SuccessResponse>
 
-    // Data Class para resposta de sucesso (se aplicável ao seu projeto)
+    //-------------------- CRUD PARA OCORRENCIAS --------------------
+
+    @GET("/apis/get_ocorrencia.php")
+    fun getOcorrencias(): Call<List<Ocorrencia>>
+
+    @DELETE("/apis/delete_ocorrencia.php")
+    fun deleteOcorrencia(@Query("id") userId: Int): Call<Void>
+
+    // ATUALIZAÇÃO CORRIGIDA: Usa @POST para evitar o erro 405 no servidor
+    @POST("/apis/update_ocorrencia.php")
+    fun updateOcorrencia(@Body Ocorrencia: Ocorrencia): Call<SuccessResponse>
+
+    // Método para criar um novo usuário (POST)
+    @POST("/apis/create_ocorrencia.php")
+    fun createOcorrencia(@Body Ocorrencia: Ocorrencia): Call<SuccessResponse>
+
     data class SuccessResponse(
         val success: Boolean,
         val message: String?

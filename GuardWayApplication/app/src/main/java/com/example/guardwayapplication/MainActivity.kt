@@ -90,10 +90,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     ) == PackageManager.PERMISSION_GRANTED) {
                     map.isMyLocationEnabled = true
                 }
-                // Não chame map.addMarker() para esta localização!
 
             } else {
-                // Se for qualquer outro lugar (marcador de destino, etc.), adicione o marcador
                 map.addMarker(
                     MarkerOptions()
                         .title(place.name)
@@ -141,7 +139,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             } else {
                 // Permissão negada.
                 Log.d("Location", "Permissão de localização negada pelo usuário.")
-                // Opcional: Centralizar o mapa em uma localização padrão (ex: São Paulo)
                 if (googleMap != null) {
                     val saoPaulo = LatLng(-23.5505, -46.6333)
                     googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(saoPaulo, DEFAULT_ZOOM))

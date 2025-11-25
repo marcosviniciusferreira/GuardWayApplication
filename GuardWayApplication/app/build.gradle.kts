@@ -77,4 +77,6 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
     implementation ("com.squareup.okhttp3:okhttp:4.9.0")
 
+    //Pequisa de Endereços
+    implementation("com.google.android.libraries.places:places:3.5.0")
 }
