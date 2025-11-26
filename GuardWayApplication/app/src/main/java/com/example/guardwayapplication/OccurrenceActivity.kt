@@ -7,11 +7,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.Spinner
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.android.gms.common.api.Status
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,13 +26,25 @@ import java.util.*
 class OccurrenceFormActivity : AppCompatActivity() {
 
     private lateinit var apiService: ApiService
-    private lateinit var txtTipoOcorrencia: EditText
+    private lateinit var spnTipoOcorrencia: Spinner
     private lateinit var txtDescricao: EditText
-    private lateinit var txtDataHora: EditText
+    private lateinit var txtDataHora: EditText // Variável declarada
     private lateinit var btnSalvar: Button
     private lateinit var btnVoltar: Button
     private lateinit var textFormTitle: TextView
     private lateinit var autocompleteFragment: AutocompleteSupportFragment
+
+    // Tipos de ocorrências padronizados
+    private val tiposOcorrencia = arrayOf(
+        "Selecione o Tipo", // Padrão
+        "Furto ou Roubo",
+        "Vandalismo",
+        "Agressão",
+        "Invasão",
+        "Suspeita de Atividade Ilegal",
+        "Assédio",
+        "Outros (Relacionados à Segurança)"
+    )
 
     private var enderecoSelecionado: String = ""
     private var latSelecionada: Double = 0.0
@@ -44,11 +59,12 @@ class OccurrenceFormActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_occurrence_form)
 
+        // Inicialização da API Places (Manter a chave hardcoded, mas atenção para segurança)
         if (!Places.isInitialized()) {
-            // Busca o valor da chave de API do arquivo de recursos strings.xml
-            Places.initialize(applicationContext, getString(R.string.api_key))
+            Places.initialize(applicationContext, "AIzaSyCuUyAV8yqeNBatJcxGUv-nJKC7OChYZLM")
         }
 
+        // Inicialização do Autocomplete Fragment
         autocompleteFragment =
             supportFragmentManager.findFragmentById(R.id.autocomplete_fragment)
                     as AutocompleteSupportFragment
@@ -76,19 +92,28 @@ class OccurrenceFormActivity : AppCompatActivity() {
                 Toast.makeText(this@OccurrenceFormActivity, "Endereço selecionado!", Toast.LENGTH_SHORT).show()
             }
 
-            override fun onError(status: com.google.android.gms.common.api.Status) {
-                // Esta mensagem é exibida por causa da chave de API incorreta.
+            override fun onError(status: Status) {
                 Log.e("Places", "Ocorreu um erro no Autocomplete: $status")
                 Toast.makeText(this@OccurrenceFormActivity, "Erro ao buscar endereço.", Toast.LENGTH_SHORT).show()
             }
         })
 
+        // Inicialização de Views
         textFormTitle = findViewById(R.id.textFormTitle)
-        txtTipoOcorrencia = findViewById(R.id.txtTipoOcorrencia)
+        spnTipoOcorrencia = findViewById(R.id.spnTipoOcorrencia)
         txtDescricao = findViewById(R.id.txtDescricao)
         txtDataHora = findViewById(R.id.txtDataHora)
         btnSalvar = findViewById(R.id.btnSalvar)
         btnVoltar = findViewById(R.id.btnVoltar)
+
+        // Configuração do Spinner
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            tiposOcorrencia
+        )
+        spnTipoOcorrencia.adapter = adapter
+
 
         val retrofit = Retrofit.Builder()
             .baseUrl("http://192.168.1.15/")
@@ -103,7 +128,7 @@ class OccurrenceFormActivity : AppCompatActivity() {
 
         if (!isEditing) {
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-            txtDataHora.setText(formatter.format(Date()))
+            txtDataHora.setText(formatter.format(Date())) // Agora, txtDataHora está inicializado
         }
     }
 
@@ -117,7 +142,12 @@ class OccurrenceFormActivity : AppCompatActivity() {
             textFormTitle.text = "Editar Ocorrência (ID: $ocorrenciaId)"
             btnSalvar.text = "Atualizar Ocorrência"
 
-            txtTipoOcorrencia.setText(ocorrenciaParaEditar.tipo_ocorrencia)
+            // Define o valor selecionado no Spinner
+            val tipoOcorrenciaIndex = tiposOcorrencia.indexOf(ocorrenciaParaEditar.tipo_ocorrencia)
+            if (tipoOcorrenciaIndex >= 0) {
+                spnTipoOcorrencia.setSelection(tipoOcorrenciaIndex)
+            }
+
             txtDescricao.setText(ocorrenciaParaEditar.descricao)
             txtDataHora.setText(ocorrenciaParaEditar.data_hora)
 
@@ -133,15 +163,25 @@ class OccurrenceFormActivity : AppCompatActivity() {
             textFormTitle.text = "Registrar Nova Ocorrência"
             btnSalvar.text = "Registrar"
             ocorrenciaId = null
+            // Garante que a primeira opção ("Selecione o Tipo") esteja selecionada ao criar
+            spnTipoOcorrencia.setSelection(0)
         }
     }
 
     private fun saveOcorrencia() {
-        val tipoOcorrencia = txtTipoOcorrencia.text.toString().trim()
+        // Pega o item selecionado do Spinner
+        val tipoOcorrencia = spnTipoOcorrencia.selectedItem.toString().trim()
         val descricao = txtDescricao.text.toString().trim()
         val dataHora = txtDataHora.text.toString().trim()
         val endereco = enderecoSelecionado.trim()
 
+        // Validação de seleção: se o primeiro item ("Selecione o Tipo") for escolhido
+        if (tipoOcorrencia == tiposOcorrencia[0]) {
+            Toast.makeText(this, "Selecione um Tipo de Ocorrência válido.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Validação dos campos restantes
         if (tipoOcorrencia.isEmpty() || endereco.isEmpty() || dataHora.isEmpty()) {
             Toast.makeText(this, "Todos os campos, incluindo o endereço, são obrigatórios.", Toast.LENGTH_SHORT).show()
             return
@@ -150,7 +190,7 @@ class OccurrenceFormActivity : AppCompatActivity() {
         val ocorrenciaPayload = Ocorrencia(
             id_ocorrencia = ocorrenciaId,
             id_usuario = LOGGED_IN_USER_ID,
-            tipo_ocorrencia = tipoOcorrencia,
+            tipo_ocorrencia = tipoOcorrencia, // Valor padronizado
             descricao = descricao,
             data_hora = dataHora,
             latitude = latSelecionada.toString(),

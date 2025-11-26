@@ -19,14 +19,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Campo para Tipo de Ocorrência -->
-    <EditText
-        android:id="@+id/txtTipoOcorrencia"
+    <!-- Campo para Tipo de Ocorrência (SPINNER/COMBOBOX) -->
+    <Spinner
+        android:id="@+id/spnTipoOcorrencia"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Tipo de Ocorrência (Ex: Roubo, Acidente)"
-        android:inputType="textCapSentences"
+        android:minHeight="48dp"
+        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textFormTitle" />
@@ -43,15 +43,9 @@
         android:minLines="3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtTipoOcorrencia" />
+        app:layout_constraintTop_toBottomOf="@id/spnTipoOcorrencia" />
 
-    <!--
-        CAMPO DE ENDEREÇO:
-        O tamanho visual do AutocompleteSupportFragment não pode ser facilmente alterado
-        como um EditText normal, pois a UI interna é controlada pela biblioteca.
-        O fragmento em si ocupa o espaço definido aqui, mas a barra de pesquisa interna
-        tem uma altura padrão.
-    -->
+    <!-- Campo de Endereço (Autocomplete) -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/autocomplete_fragment"
         android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
@@ -74,6 +68,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/autocomplete_fragment" />
 
+    <!-- Botão de Salvar/Registrar -->
+    <Button
+        android:id="@+id/btnSalvar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Registrar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnVoltar"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <!-- Botão de Voltar -->
     <Button
         android:id="@+id/btnVoltar"
@@ -85,15 +89,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnSalvar" />
-
-    <!-- Botão de Salvar/Registrar -->
-    <Button
-        android:id="@+id/btnSalvar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Registrar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btnVoltar"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
