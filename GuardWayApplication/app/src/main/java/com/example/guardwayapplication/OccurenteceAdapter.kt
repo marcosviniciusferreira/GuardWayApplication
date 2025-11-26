@@ -15,8 +15,8 @@ class OccurrenceAdapter(
     class OccurrenceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         // As IDs das Views aqui devem corresponder às IDs definidas em item_ocorrencia.xml
         val textId: TextView = view.findViewById(R.id.textOccurrenceId)
-        val textTipo: TextView = view.findViewById(R.id.textOccurrenceTipo)
-        val textEndereco: TextView = view.findViewById(R.id.textOccurrenceEndereco)
+        val textTipo: TextView = view.findViewById(R.id.tipoOcorrencia)
+        val textEndereco: TextView = view.findViewById(R.id.enderrecoOcorrencia)
         val textDataHora: TextView = view.findViewById(R.id.textOccurrenceDataHora)
         val btnEdit: ImageButton = view.findViewById(R.id.btnEditOccurrence)
         val btnDelete: ImageButton = view.findViewById(R.id.btnDeleteOccurrence)

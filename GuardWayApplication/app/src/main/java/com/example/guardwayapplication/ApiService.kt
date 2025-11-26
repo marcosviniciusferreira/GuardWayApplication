@@ -33,14 +33,13 @@ interface ApiService {
 
     //-------------------- CRUD PARA OCORRENCIAS --------------------
 
-    @GET("/apis/get_ocorrencia.php")
+    @GET("/apis/get_ocorrencias.php")
     fun getOcorrencias(): Call<List<Ocorrencia>>
 
     @DELETE("/apis/delete_ocorrencia.php")
     fun deleteOcorrencia(@Query("id") userId: Int): Call<Void>
 
-    // ATUALIZAÇÃO CORRIGIDA: Usa @POST para evitar o erro 405 no servidor
-    @POST("/apis/update_ocorrencia.php")
+    @PUT("/apis/update_ocorrencia.php")
     fun updateOcorrencia(@Body Ocorrencia: Ocorrencia): Call<SuccessResponse>
 
     @POST("/apis/create_ocorrencia.php")
