@@ -1,6 +1,7 @@
 package com.example.guardwayapplication
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -74,6 +75,7 @@ class LoginActivity : AppCompatActivity() {
             ) {
                 // Acesso correto ao 'this' da Activity para Contexto (Toast e Intent)
                 if (response.isSuccessful && response.body() != null) {
+
                     val loginResponses = response.body()!!
                     if (loginResponses.isNotEmpty()) {
 

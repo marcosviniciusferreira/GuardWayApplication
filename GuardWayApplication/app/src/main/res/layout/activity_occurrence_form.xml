@@ -19,7 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Campo para Tipo de Ocorrência (SPINNER/COMBOBOX) -->
     <Spinner
         android:id="@+id/spnTipoOcorrencia"
         android:layout_width="0dp"
@@ -27,6 +26,7 @@
         android:layout_marginTop="16dp"
         android:minHeight="48dp"
         android:padding="8dp"
+        android:background="@drawable/spinner_border"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textFormTitle" />
@@ -56,17 +56,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtDescricao" />
 
-    <!-- Campo para Data e Hora -->
-    <EditText
-        android:id="@+id/txtDataHora"
+    <!-- NOVO: Container para Data e Hora lado a lado -->
+    <LinearLayout
+        android:id="@+id/layoutDataHora"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginTop="8dp"
-        android:hint="Data e Hora (AAAA-MM-DD HH:MM:SS)"
-        android:inputType="datetime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/autocomplete_fragment" />
+        app:layout_constraintTop_toBottomOf="@id/autocomplete_fragment">
+
+        <!-- Campo para Data (aciona calendário) -->
+        <EditText
+            android:id="@+id/txtDataSelecionada"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Data (DD/MM/AAAA)"
+            android:focusable="false"
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:background="@drawable/spinner_border"
+            android:padding="12dp"
+            android:layout_marginEnd="4dp"
+            android:inputType="none"
+            android:minHeight="48dp"/>
+
+        <!-- Campo para Hora (aciona seletor de tempo) -->
+        <EditText
+            android:id="@+id/txtHoraSelecionada"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Hora (HH:MM)"
+            android:focusable="false"
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:background="@drawable/spinner_border"
+            android:padding="12dp"
+            android:layout_marginStart="4dp"
+            android:inputType="none"
+            android:minHeight="48dp"/>
+    </LinearLayout>
 
     <!-- Botão de Salvar/Registrar -->
     <Button

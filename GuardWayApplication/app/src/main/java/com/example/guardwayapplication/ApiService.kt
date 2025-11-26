@@ -1,5 +1,4 @@
 import com.example.guardwayapplication.LoginResponse
-import com.example.guardwayapplication.Ocorrencia
 import com.example.guardwayapplication.Usuario
 import retrofit2.Call
 import retrofit2.http.Body
@@ -44,7 +43,6 @@ interface ApiService {
     @POST("/apis/update_ocorrencia.php")
     fun updateOcorrencia(@Body Ocorrencia: Ocorrencia): Call<SuccessResponse>
 
-    // Método para criar um novo usuário (POST)
     @POST("/apis/create_ocorrencia.php")
     fun createOcorrencia(@Body Ocorrencia: Ocorrencia): Call<SuccessResponse>
 
