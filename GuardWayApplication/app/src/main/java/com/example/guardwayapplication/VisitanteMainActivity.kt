@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFound, Na
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toolbar: Toolbar
     private lateinit var navView: NavigationView
-    private lateinit var btnUserProfile: ImageButton // Variável para o novo botão de perfil
+    private lateinit var btnUserProfile: ImageButton
 
     // --- Referências para a UI do Bottom Sheet ---
     private lateinit var bottomSheet: LinearLayout
@@ -384,8 +384,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFound, Na
             onError("Geocoder indisponível.")
             return
         }
-        // ... (resto do código de performReverseGeocoding)
-        // Implementação omitida por brevidade, assumindo que está correta
         try {
             val geocoder = Geocoder(this, Locale("pt", "BR"))
             val addresses = geocoder.getFromLocation(lat, lon, 1)
