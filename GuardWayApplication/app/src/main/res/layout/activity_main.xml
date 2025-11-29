@@ -1,88 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
 
-    <!-- 1. Fragmento do Mapa (Ocupa a tela inteira) -->
-    <fragment
-        android:id="@+id/map_fragment"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        map:mapId="@string/map_id"
-        xmlns:map="http://schemas.android.com/apk/res-auto" />
+        tools:context=".MainActivity">
 
-    <!-- 2. Menu Lateral (Se você precisar do ícone do menu no topo) -->
-    <LinearLayout
-        android:id="@+id/bottom_sheet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:background="@color/white"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        android:elevation="8dp"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <!-- O layout_behavior é CRUCIAL para que ele se comporte como Bottom Sheet -->
-
-        <!-- Endereço e Detalhes -->
-        <TextView
-            android:id="@+id/tv_address_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Aguardando Localização..."
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/black"
-            android:layout_marginBottom="4dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Com base no último mês este local é:"
-            android:textSize="12sp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"/>
-
-        <!-- Botão Perigo (Contagem de Ocorrências) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_perigo_status"
+        <fragment
+            android:id="@+id/map_fragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:backgroundTint="@color/black"
-            android:text="PERIGOSO\n12 ocorrências"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            app:cornerRadius="12dp"
-            app:iconTint="@color/white"
-            app:iconGravity="textStart"
-            android:paddingStart="24dp"
-            android:layout_marginBottom="12dp"/>
+            android:layout_height="match_parent"
+            xmlns:map="http://schemas.android.com/apk/res-auto"
+            map:mapId="@string/map_id" />
 
-        <!-- Botão Chamada de Emergência -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_emergency_call"
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:backgroundTint="@color/black"
-            android:text="CHAMADA DE EMERGÊNCIA"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            app:cornerRadius="12dp"
-            app:iconTint="@color/white"
-            app:iconGravity="textStart"
-            android:paddingStart="24dp"
-            android:gravity="center"
-            android:textAlignment="center"/>
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:elevation="0dp"
+            app:elevation="0dp">
 
-    </LinearLayout>
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/black">
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/toolbar_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="GUARDWAY."
+                        android:textColor="@color/white"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:layout_centerInParent="true"
+                        tools:ignore="HardcodedText" />
+
+                    <ImageButton
+                        android:id="@+id/btn_user_profile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:paddingEnd="16dp"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_menu_login"
+                        android:contentDescription="Perfil do Usuário"
+                        app:tint="@color/white" />
+
+                </RelativeLayout>
+
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:id="@+id/bottom_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/bottom_sheet_padding_base"
+            android:background="@color/white"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            android:elevation="8dp"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/tv_address_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aguardando Localização..."
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/black"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Com base no último mês este local é:"
+                android:textSize="12sp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_perigo_status"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:backgroundTint="@color/black"
+                android:text="PERIGOSO\n12 ocorrências"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:cornerRadius="12dp"
+                app:iconTint="@color/white"
+                app:iconGravity="textStart"
+                android:paddingStart="24dp"
+                android:layout_marginBottom="12dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_emergency_call"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:backgroundTint="@color/black"
+                android:text="CHAMADA DE EMERGÊNCIA"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:cornerRadius="12dp"
+                app:iconTint="@color/white"
+                app:iconGravity="textStart"
+                android:paddingStart="24dp"
+                android:gravity="center"
+                android:textAlignment="center"/>
+
+        </LinearLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

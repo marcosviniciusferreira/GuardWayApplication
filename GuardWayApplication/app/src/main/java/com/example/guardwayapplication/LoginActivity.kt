@@ -3,6 +3,7 @@
 // =========================================================================
 package com.example.guardwayapplication
 
+import ApiService
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -72,7 +73,6 @@ class LoginActivity : AppCompatActivity() {
 
         val apiService = retrofit.create(ApiService::class.java)
 
-        // Esta chamada agora deve ser resolvida corretamente:
         val call = apiService.login(email, password)
 
         call.enqueue(object : Callback<List<LoginResponse>> {
@@ -109,6 +109,4 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
-
-
 }

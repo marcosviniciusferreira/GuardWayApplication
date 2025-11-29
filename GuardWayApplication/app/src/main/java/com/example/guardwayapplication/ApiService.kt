@@ -36,6 +36,9 @@ interface ApiService {
     @GET("/apis/get_ocorrencias.php")
     fun getOcorrencias(): Call<List<Ocorrencia>>
 
+    @GET("/apis/get_ocorrencias_cep.php")
+    fun getOcorrenciasPorCep(@Query("CEP") CEP: String): Call<OcorrenciaCepResponse>
+
     @DELETE("/apis/delete_ocorrencia.php")
     fun deleteOcorrencia(@Query("id") userId: Int): Call<Void>
 
@@ -48,5 +51,11 @@ interface ApiService {
     data class SuccessResponse(
         val success: Boolean,
         val message: String?
+    )
+
+    data class OcorrenciaCepResponse(
+        val status: String, // Ex: "Seguro", "Perigoso"
+        val count: Int,
+        val address: String? = null // Endereço formatado (opcional)
     )
 }

@@ -1,3 +1,8 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="bottom_sheet_padding_base">24dp</dimen>
+    <dimen name="bottom_sheet_peek_height">100dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
 </resources>
