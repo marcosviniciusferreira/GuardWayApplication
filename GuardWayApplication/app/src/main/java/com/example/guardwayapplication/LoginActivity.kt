@@ -1,7 +1,9 @@
+// =========================================================================
+// LoginActivity.kt - Código Consolidado
+// =========================================================================
 package com.example.guardwayapplication
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -12,24 +14,22 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Query
 
-// ----------------------------------------------------
-// PASSO 1: Definição da Data Class LoginResponse
-// ESTA CLASSE DEVE REFLETIR EXATAMENTE o JSON que o seu servidor retorna.
-// Exemplo: se o JSON retornar apenas um 'sucesso: true' e 'token: string'
+// --- CLASSES DE DADOS NECESSÁRIAS PARA A API ---
+
+// Definição da Data Class LoginResponse
 data class LoginResponse(
     val usuarioId: Int,
     val usuarioNome: String,
     val usuarioEmail: String,
     val usuarioCpf: String
 )
-// ----------------------------------------------------
-
-
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var emailEditText: EditText
@@ -39,47 +39,58 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // enableEdgeToEdge e ViewCompat não são estritamente necessários para o login,
-        // mas se estiverem dando erro, verifique se foram importados corretamente
-        // ou remova-os se não estiver usando-os ativamente.
-
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
+
         val loginButton: Button = findViewById(R.id.loginButton)
 
         loginButton.setOnClickListener {
-            blockLogin()
+            performLogin()
         }
     }
 
-    private fun blockLogin() {
+    private fun performLogin() {
+        // Valores hardcoded para teste RÁPIDO, conforme solicitado
+        val email = "andre@teste.com"
+        val password = "123"
+
+        /*
+        // Se precisar voltar a ler dos campos de texto, use:
         val email = emailEditText.text.toString().trim()
         val password = passwordEditText.text.toString().trim()
 
-        // ⚠️ VERIFIQUE: A URL base deve terminar com uma barra e não ter espaços.
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Preencha e-mail e senha.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        */
+
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.1.15/") // Removido o espaço extra
+            .baseUrl("http://192.168.1.15/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         val apiService = retrofit.create(ApiService::class.java)
 
+        // Esta chamada agora deve ser resolvida corretamente:
         val call = apiService.login(email, password)
 
-        // PASSO 2: Implementação ÚNICA e correta do Callback
         call.enqueue(object : Callback<List<LoginResponse>> {
 
             override fun onResponse(
                 call: Call<List<LoginResponse>>,
                 response: Response<List<LoginResponse>>
             ) {
-                // Acesso correto ao 'this' da Activity para Contexto (Toast e Intent)
                 if (response.isSuccessful && response.body() != null) {
 
                     val loginResponses = response.body()!!
                     if (loginResponses.isNotEmpty()) {
+                        // Login bem-sucedido
+                        Toast.makeText(this@LoginActivity, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
 
-                        // Redireciona
+                        // TODO: Salvar dados do usuário (ex: token ou id) no SharedPreferences antes de redirecionar
+
+                        // Assumindo que MainActivity existe:
                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()
@@ -98,4 +109,6 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
+
+
 }
