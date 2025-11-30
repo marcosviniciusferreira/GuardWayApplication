@@ -7,7 +7,8 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import android.view.ViewGroup // Adicionada para o Dialog/FrameLayout, embora não usada neste arquivo, é bom ter se fosse usar o Dialog.
+import android.view.ViewGroup
+import android.widget.ImageView // Importe ImageView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,11 +21,14 @@ class UserFormActivity : AppCompatActivity() {
     private lateinit var txtNome: EditText
     private lateinit var txtEmail: EditText
     private lateinit var txtCpf: EditText
-    private lateinit var txtSenha  : EditText
+    private lateinit var txtSenha: EditText
     private lateinit var btnSalvar: Button
 
     private lateinit var btnVoltar: Button
     private lateinit var textFormTitle: TextView
+
+    // VARIÁVEL ADICIONADA PARA O BOTÃO VOLTAR NA TOOLBAR
+    private lateinit var btnBackToolbar: ImageView
 
     private var isEditing: Boolean = false
     private var userId: Int? = null
@@ -38,9 +42,15 @@ class UserFormActivity : AppCompatActivity() {
         txtNome = findViewById(R.id.txtNome)
         txtEmail = findViewById(R.id.txtEmail)
         txtCpf = findViewById(R.id.txtCpf)
-        txtSenha = findViewById(R.id.txtSenha) // CORREÇÃO: Já estava aqui e está correto.
+        txtSenha = findViewById(R.id.txtSenha)
         btnSalvar = findViewById(R.id.btnSalvar)
         btnVoltar = findViewById(R.id.btnVoltar)
+
+        // INICIALIZAÇÃO E LISTENER DO BOTÃO VOLTAR DA TOOLBAR
+        btnBackToolbar = findViewById(R.id.btn_back_toolbar) // ID definido no XML
+        btnBackToolbar.setOnClickListener {
+            finish() // Retorna à Activity anterior
+        }
 
         // Configurar Retrofit
         val retrofit = Retrofit.Builder()
@@ -60,7 +70,6 @@ class UserFormActivity : AppCompatActivity() {
 
     private fun setupIntentData() {
         // Usa getParcelableExtra para buscar o objeto Usuario completo
-        // Se a classe Usuario for Serializable, use getSerializableExtra("USUARIO_EXTRA") as? Usuario
         val usuarioParaEditar = intent.getParcelableExtra<Usuario>("USUARIO_EXTRA")
 
         if (usuarioParaEditar != null) {
@@ -68,7 +77,7 @@ class UserFormActivity : AppCompatActivity() {
             userId = usuarioParaEditar.USUARIO_ID // Pega o ID do objeto
 
             // 1. Configura a UI para Edição
-            textFormTitle.text = "Editar Usuário (ID: $userId)"
+            textFormTitle.text = "Editar Conta"
             btnSalvar.text = "Atualizar"
             btnVoltar.text = "Voltar"
 
@@ -93,7 +102,6 @@ class UserFormActivity : AppCompatActivity() {
         val nome = txtNome.text.toString().trim()
         val email = txtEmail.text.toString().trim()
         val cpf = txtCpf.text.toString().trim()
-        // A senha só será usada se for preenchida, o backend deve tratar o campo vazio/nulo
         val senha = txtSenha.text.toString().trim()
 
         if (nome.isEmpty() || email.isEmpty() || cpf.isEmpty()) {
@@ -101,14 +109,9 @@ class UserFormActivity : AppCompatActivity() {
             return
         }
 
-        // Se estiver editando, e a senha não foi alterada, é comum enviar o hash antigo
-        // ou um campo nulo para o backend ignorar. Como a senha aqui é sempre vazia na edição
-        // a menos que o usuário digite algo, o backend deve aceitar a string vazia ""
-        // e ignorá-la na atualização.
-
         // Cria o objeto de dados a ser enviado
         val userPayload = Usuario(
-            USUARIO_ID = userId ?: 0, // Essencial: Envia o ID na edição
+            USUARIO_ID = userId ?: 0,
             USUARIO_NOME = nome,
             USUARIO_EMAIL = email,
             USUARIO_CPF = cpf,
@@ -117,10 +120,8 @@ class UserFormActivity : AppCompatActivity() {
 
         // Escolhe a chamada de API correta
         val call: Call<ApiService.SuccessResponse> = if (isEditing) {
-            // Se for edição, chama o método PUT/PATCH da API
             apiService.updateUsuario(userPayload)
         } else {
-            // Se for criação, chama o método POST da API
             apiService.createUsuario(userPayload)
         }
 
