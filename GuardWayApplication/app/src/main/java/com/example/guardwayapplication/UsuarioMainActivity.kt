@@ -2,6 +2,7 @@ package com.example.guardwayapplication
 
 import ApiService
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
@@ -36,8 +37,13 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import com.google.android.gms.tasks.CancellationTokenSource
-import com.google.android.gms.location.Priority // Importação Correta para a Prioridade
+import com.google.android.gms.location.Priority
 import com.google.android.material.navigation.NavigationView
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place // Classe Place do Google Places
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.android.gms.common.api.Status
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -51,7 +57,6 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
     companion object {
         private const val PERMISSION_REQUEST_CODE = 100
         private const val DEFAULT_ZOOM = 15f
-        // Usando a constante de Prioridade de acordo com o GMS Location v17+
         private const val LOCATION_PRIORITY = Priority.PRIORITY_HIGH_ACCURACY
         private const val BASE_URL = "http://192.168.1.4/"
 
@@ -59,6 +64,8 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         private const val DEFAULT_LATITUDE = -23.5505 // São Paulo
         private const val DEFAULT_LONGITUDE = -46.6333 // São Paulo
         private const val DEFAULT_ADDRESS = "Localização Indisponível (São Paulo, SP)"
+        // ⚠️ ATENÇÃO: Use a sua chave de API do Google Maps/Places
+        private const val PLACES_API_KEY = "AIzaSyCuUyAV8yqeNBatJcxGUv-nJKC7OChYZLM"
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -70,8 +77,7 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
     private lateinit var navView: NavigationView
     private lateinit var btnUserProfile: ImageButton
 
-    // --- SharedPreferences (NOVO) ---
-    // ⚠️ ATENÇÃO: É necessário ter a classe SharedPreferencesManager implementada.
+    // --- SharedPreferences ---
     private lateinit var prefsManager: SharedPreferencesManager
 
     // --- Referências para a UI do Bottom Sheet ---
@@ -80,10 +86,12 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
     private lateinit var tvAddressTitle: TextView
     private lateinit var btnPerigoStatus: MaterialButton
     private lateinit var btnEmergencyCall: MaterialButton
-
-    // NOVO BOTÃO: Cadastrar Ocorrência (NOVO)
+    private lateinit var btnVerRelatorioCompleto: MaterialButton
     private lateinit var btnCadastrarOcorrencia: MaterialButton
-    // ---------------------------------------------
+
+    // --- Referências para o Autocomplete (NOVO) ---
+    private lateinit var autocompleteFragment: AutocompleteSupportFragment
+    // ------------------------------------------------
 
     lateinit var apiService: ApiService
 
@@ -92,27 +100,24 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
     private var currentCEP: String? = null
     private var currentFullAddress: String? = null
 
-    private var places = mutableListOf<Place>()
+    // CORREÇÃO 1: Tipo da lista mudado de Place para LocalPlace
+    private var places = mutableListOf<LocalPlace>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // ⚠️ Verifique se activity_usuario_main existe e está correto
         setContentView(R.layout.activity_usuario_main)
 
-        // 🌟 Inicializa o gerenciador de SharedPreferences
+        initViews()
+        initializeRetrofit()
+
         prefsManager = SharedPreferencesManager(this)
 
         // --- Configuração da Toolbar e Drawer ---
-        drawerLayout = findViewById(R.id.drawer_layout)
-        toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.title = null
 
-        btnUserProfile = findViewById(R.id.btn_user_profile)
-
-        // Configura o ícone de perfil para abrir o Drawer
         btnUserProfile.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
@@ -127,22 +132,12 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        navView = findViewById(R.id.nav_view)
         navView.setNavigationItemSelectedListener(this)
-
-        // 🌟 Configura o cabeçalho do Drawer com os dados do usuário logado
         setupDrawerHeader()
         // ------------------------------------------
 
-        // --- Inicialização do Bottom Sheet e Componentes ---
-        bottomSheet = findViewById(R.id.bottom_sheet)
-        tvAddressTitle = findViewById(R.id.tv_address_title)
-        btnPerigoStatus = findViewById(R.id.btn_perigo_status)
-        btnEmergencyCall = findViewById(R.id.btn_emergency_call)
-
-        // Inicialização do novo botão
-        btnCadastrarOcorrencia = findViewById(R.id.btn_cadastrar_ocorrencia)
-        // -------------------------------------
+        // Configura o Places Autocomplete (NOVO)
+        setupPlacesAutocomplete()
 
         // --- Aplicando Insets ---
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -151,7 +146,6 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
             v.setPadding(systemBars.left, 0, systemBars.right, 0)
 
             val initialPaddingBottom =
-                // ⚠️ Verifique se o recurso R.dimen.bottom_sheet_padding_base existe
                 resources.getDimensionPixelSize(R.dimen.bottom_sheet_padding_base)
 
             bottomSheet.setPadding(
@@ -163,14 +157,6 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
             insets
         }
         // -------------------------------------------------------------
-
-        // --- Inicialização do Retrofit ---
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        apiService = retrofit.create(ApiService::class.java)
-        // ---------------------------------
 
         // Configura o comportamento do painel deslizante
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -191,7 +177,7 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
             startActivity(intent)
         }
 
-        // Listener do botão Cadastrar Ocorrência (NOVO)
+        // Listener do botão Cadastrar Ocorrência
         btnCadastrarOcorrencia.setOnClickListener {
             val intent = Intent(this@UsuarioMainActivity, OccurrenceFormActivity::class.java)
             // Passa os dados de localização atuais para pré-preencher o formulário
@@ -203,6 +189,11 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
             startActivity(intent)
             Toast.makeText(this, "Navegando para Cadastro de Ocorrência...", Toast.LENGTH_SHORT)
                 .show()
+        }
+
+        // Listener do botão Ver Relatório Completo
+        btnVerRelatorioCompleto.setOnClickListener {
+            navigateToRelatorioSeguranca()
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -218,12 +209,108 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
     }
 
     /**
+     * Centraliza a inicialização do Retrofit.
+     */
+    private fun initializeRetrofit() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        apiService = retrofit.create(ApiService::class.java)
+    }
+
+    /**
+     * Centraliza a inicialização de todas as views.
+     */
+    private fun initViews() {
+        // Toolbar e Drawer
+        drawerLayout = findViewById(R.id.drawer_layout)
+        toolbar = findViewById(R.id.toolbar)
+        btnUserProfile = findViewById(R.id.btn_user_profile)
+        navView = findViewById(R.id.nav_view)
+
+        // Bottom Sheet
+        bottomSheet = findViewById(R.id.bottom_sheet)
+        tvAddressTitle = findViewById(R.id.tv_address_title)
+        btnPerigoStatus = findViewById(R.id.btn_perigo_status)
+        btnEmergencyCall = findViewById(R.id.btn_emergency_call)
+        btnCadastrarOcorrencia = findViewById(R.id.btn_cadastrar_ocorrencia)
+        btnVerRelatorioCompleto = findViewById(R.id.btn_ver_relatorio_completo)
+    }
+
+    /**
+     * Configura o Google Places Autocomplete para a pesquisa de endereço.
+     */
+    private fun setupPlacesAutocomplete() {
+        // 1. Inicializa o Places API
+        if (!Places.isInitialized()) {
+            Places.initialize(applicationContext, PLACES_API_KEY)
+        }
+
+        // 2. Obtém a instância do fragmento
+        autocompleteFragment = supportFragmentManager
+            .findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
+
+        // 3. Define os campos de dados que você quer receber
+        // NOTE: Usa a classe Place.Field da biblioteca Google Places (Importada no topo)
+        autocompleteFragment.setPlaceFields(
+            listOf(
+                Place.Field.ID,
+                Place.Field.NAME,
+                Place.Field.ADDRESS,
+                Place.Field.LAT_LNG,
+                Place.Field.ADDRESS_COMPONENTS
+            )
+        )
+
+        // 4. Define o listener de seleção
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                Log.i("Places", "Lugar selecionado: ${place.name}, ${place.address}")
+
+                val latLng = place.latLng ?: return onError("Coordenadas inválidas para o endereço.")
+
+                // Extrai o CEP
+                val cep = place.addressComponents?.asList()
+                    ?.find { it.types.contains("postal_code") }?.name ?: ""
+
+                val address = place.address ?: place.name ?: "Endereço Desconhecido"
+
+                // Atualiza o mapa: move a câmera para a localização pesquisada
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM))
+
+                // Atualiza as variáveis globais
+                currentLatitude = latLng.latitude
+                currentLongitude = latLng.longitude
+                currentCEP = cep
+                currentFullAddress = address
+
+                // Atualiza o Bottom Sheet
+                onAddressFound(currentFullAddress!!)
+
+                // Recarrega as ocorrências para o novo local
+                if (currentCEP != null && currentCEP!!.isNotEmpty()) {
+                    getOcorrenciasByCep(currentCEP!!)
+                } else {
+                    getOcorrenciasByCep("00000-000") // Fallback de CEP
+                }
+
+                Toast.makeText(this@UsuarioMainActivity, "Localização de pesquisa carregada.", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onError(status: Status) {
+                Log.e("Places", "Ocorreu um erro no Autocomplete: $status")
+                Toast.makeText(this@UsuarioMainActivity, "Erro ao buscar endereço: ${status.statusMessage}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    /**
      * Carrega os dados do SharedPreferences e os exibe no nav_header_usuario.
      */
     private fun setupDrawerHeader() {
         val headerView = navView.getHeaderView(0)
 
-        // ⚠️ Verifique se estes IDs existem no seu nav_header_usuario.xml
         val tvUserName = headerView.findViewById<TextView>(R.id.tv_user_name)
         val tvUserEmail = headerView.findViewById<TextView>(R.id.tv_user_email)
         val btnLogout = headerView.findViewById<Button>(R.id.btn_logout)
@@ -256,7 +343,7 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         }
     }
 
-    // --- MÉTODOS DE NAVEGAÇÃO DO DRAWER ---
+    // --- MÉTODOS DE NAVEGAÇÃO DO DRAWER (e Botões) ---
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -294,14 +381,11 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
     }
 
     private fun navigateToRelatorioSeguranca() {
-        // 1. Define valores de fallback se a busca assíncrona ainda estiver incompleta
-        val cepToPass = currentCEP ?: "00000-000" // Valor padrão/vazio para CEP
+        val cepToPass = currentCEP ?: "00000-000"
         val addressToPass = currentFullAddress ?: "Localização em processamento"
 
-        // 2. Cria o Intent
         val intent = Intent(this, RelatorioSegurancaActivity::class.java)
 
-        // Passa os dados (podendo ser o fallback)
         intent.putExtra("endereco", addressToPass)
         intent.putExtra("cep", cepToPass)
 
@@ -327,10 +411,9 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
      * Limpa os dados de sessão do SharedPreferences e redireciona para a tela de Visitante.
      */
     private fun performLogout() {
-        prefsManager.clearData() // Limpa o ID, Nome, Email, etc.
+        prefsManager.clearData()
         Toast.makeText(this, "Sessão encerrada.", Toast.LENGTH_SHORT).show()
 
-        // Redireciona para a tela inicial (VisitanteMainActivity)
         val intent = Intent(this, VisitanteMainActivity::class.java)
         intent.flags =
             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -443,7 +526,8 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
                     performReverseGeocoding(currentLatitude!!, currentLongitude!!)
 
                     places.removeAll { it.name == "Sua Localização" }
-                    val userPlace = Place(
+                    // CORREÇÃO 2: Criação da instância LocalPlace
+                    val userPlace = LocalPlace(
                         name = "Sua Localização",
                         latLng = userLatLng,
                         address = "Você está aqui!",
@@ -481,7 +565,8 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
                     performReverseGeocoding(currentLatitude!!, currentLongitude!!)
 
                     places.removeAll { it.name == "Sua Localização" }
-                    val userPlace = Place(
+                    // CORREÇÃO 3: Criação da instância LocalPlace
+                    val userPlace = LocalPlace(
                         name = "Sua Localização",
                         latLng = userLatLng,
                         address = "Você está aqui!",
@@ -572,7 +657,8 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
                         ocorrencias.forEach { item ->
                             try {
                                 val latLng = LatLng(item.latitude, item.longitude)
-                                val markerPlace = Place(
+                                // CORREÇÃO 4: Criação da instância LocalPlace
+                                val markerPlace = LocalPlace(
                                     name = "${item.tipo_ocorrencia} (#${item.id_ocorrencia})",
                                     latLng = latLng,
                                     address = item.endereco ?: "Ocorrência",
@@ -628,7 +714,6 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
 
     override fun onAddressFound(address: String) {
         tvAddressTitle.text = address
-        // Garante que o bottom sheet esteja visível e expandido após a localização bem-sucedida
         bottomSheet.visibility = View.VISIBLE
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
@@ -640,11 +725,10 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         val count = data.count
         val statusText = data.status
 
-        // 🟢 Corrigido: Usando referências de cores mais seguras
         val colorResId = when (statusText) {
-            "PERIGOSO" -> android.R.color.black // Preto explícito do Android
+            "PERIGOSO" -> android.R.color.black
             "Erro de Rede", "Falha na Rede" -> android.R.color.darker_gray
-            else -> android.R.color.holo_green_dark // Verde explícito do Android
+            else -> android.R.color.holo_green_dark
         }
         val color = ContextCompat.getColor(this, colorResId)
 
@@ -667,7 +751,6 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         Log.e("MAIN_ERROR", message)
 
-        // Define o estado de segurança como Erro e usa a localização padrão
         setPerigoStatusLoading(false)
         btnPerigoStatus.text = "ERRO\nSem Dados"
         btnPerigoStatus.setBackgroundColor(ContextCompat.getColor(this, android.R.color.darker_gray))
@@ -677,7 +760,8 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
-    data class Place(
+    // A classe customizada foi renomeada para LocalPlace para evitar conflito com a Place do Google Places
+    data class LocalPlace(
         val name: String,
         val latLng: LatLng,
         val address: String,
