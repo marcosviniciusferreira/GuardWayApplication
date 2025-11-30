@@ -1,146 +1,333 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout
+
     xmlns:android="http://schemas.android.com/apk/res/android"
+
     xmlns:app="http://schemas.android.com/apk/res-auto"
+
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
+
     android:layout_height="match_parent"
+
     android:background="@color/white"
+
     tools:context=".LoginActivity">
 
-    <!-- Toolbar (Seta de voltar) -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_login"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/transparent"
-        android:elevation="0dp"
+
+
+    <ImageView
+
+        android:id="@+id/bg_shape_top"
+
+        android:layout_width="250dp"
+
+        android:layout_height="250dp"
+
+        android:src="@drawable/ic_shape_top"
+
+        android:scaleType="fitXY"
+
         app:layout_constraintTop_toTopOf="parent"
+
+        app:layout_constraintEnd_toEndOf="parent"
+
+        tools:ignore="ContentDescription" />
+
+
+
+    <!-- Desenho BAIXO (Canto Inferior Esquerdo) -->
+
+    <ImageView
+
+        android:id="@+id/bg_shape_bottom"
+
+        android:layout_width="250dp"
+
+        android:layout_height="250dp"
+
+        android:src="@drawable/ic_shape_bottom"
+
+        android:scaleType="fitXY"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+
+        tools:ignore="ContentDescription" />
+
+    <!-- Toolbar (Seta de voltar) -->
+
+    <androidx.appcompat.widget.Toolbar
+
+        android:id="@+id/toolbar_login"
+
+        android:layout_width="match_parent"
+
+        android:layout_height="?attr/actionBarSize"
+
+        android:background="@android:color/transparent"
+
+        android:elevation="0dp"
+
+        app:layout_constraintTop_toTopOf="parent"
+
         app:navigationIcon="@drawable/ic_arrow_back"
+
         app:titleTextColor="@color/black" />
 
+
+
     <!-- Título LOGIN (Agora em Vermelho) -->
+
     <TextView
+
         android:id="@+id/tv_login_title"
+
         android:layout_width="wrap_content"
+
         android:layout_height="wrap_content"
+
         android:layout_marginTop="32dp"
+
         android:text="Login"
+
         android:textColor="@color/guardway_red"
+
         android:textSize="32sp"
+
         android:textStyle="bold"
+
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintStart_toStartOf="parent"
+
         app:layout_constraintTop_toBottomOf="@id/toolbar_login"
+
         tools:ignore="HardcodedText" />
+
+
 
     <!-- Subtítulo -->
+
     <TextView
+
         android:id="@+id/tv_welcome_subtitle"
+
         android:layout_width="wrap_content"
+
         android:layout_height="wrap_content"
+
         android:layout_marginTop="8dp"
+
         android:text="Bem vindo de volta!"
+
         android:textColor="@color/black"
+
         android:textSize="16sp"
+
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintStart_toStartOf="parent"
+
         app:layout_constraintTop_toBottomOf="@id/tv_login_title"
+
         tools:ignore="HardcodedText" />
+
+
 
     <!-- Campo EMAIL -->
+
     <com.google.android.material.textfield.TextInputLayout
+
         android:id="@+id/til_email"
+
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
         android:layout_width="0dp"
+
         android:layout_height="wrap_content"
+
         android:layout_marginHorizontal="32dp"
+
         android:layout_marginTop="48dp"
+
         android:hint="Email"
+
         app:boxStrokeColor="@color/guardway_red"
+
         app:hintTextColor="@color/guardway_red"
+
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintStart_toStartOf="parent"
+
         app:layout_constraintTop_toBottomOf="@id/tv_welcome_subtitle">
 
+
+
         <com.google.android.material.textfield.TextInputEditText
+
             android:id="@+id/emailEditText"
+
             android:layout_width="match_parent"
+
             android:layout_height="wrap_content"
+
             android:inputType="textEmailAddress" />
+
     </com.google.android.material.textfield.TextInputLayout>
+
+
 
     <!-- Campo SENHA -->
+
     <com.google.android.material.textfield.TextInputLayout
+
         android:id="@+id/til_password"
+
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
         android:layout_width="0dp"
+
         android:layout_height="wrap_content"
+
         android:layout_marginHorizontal="32dp"
+
         android:layout_marginTop="16dp"
+
         android:hint="Senha"
+
         app:boxStrokeColor="@color/guardway_red"
+
         app:hintTextColor="@color/guardway_red"
+
         app:endIconMode="password_toggle"
+
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintStart_toStartOf="parent"
+
         app:layout_constraintTop_toBottomOf="@id/til_email">
 
+
+
         <com.google.android.material.textfield.TextInputEditText
+
             android:id="@+id/passwordEditText"
+
             android:layout_width="match_parent"
+
             android:layout_height="wrap_content"
+
             android:inputType="textPassword" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
+
+
     <!-- Esqueceu a senha -->
+
     <TextView
+
         android:id="@+id/tv_forgot_password"
+
         android:layout_width="wrap_content"
+
         android:layout_height="wrap_content"
+
         android:layout_marginTop="8dp"
+
         android:layout_marginEnd="32dp"
+
         android:text="Esqueceu sua senha?"
+
         android:textColor="@color/black"
+
         android:textSize="12sp"
+
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintTop_toBottomOf="@id/til_password"
+
         tools:ignore="HardcodedText" />
+
+
 
     <!-- Botão LOGIN (Sólido Vermelho) -->
+
     <com.google.android.material.button.MaterialButton
+
         android:id="@+id/loginButton"
+
         android:layout_width="0dp"
+
         android:layout_height="60dp"
+
         android:layout_marginHorizontal="32dp"
+
         android:layout_marginTop="32dp"
+
         android:backgroundTint="@color/guardway_red"
+
         android:text="LOGIN"
+
         android:textColor="@color/white"
+
         android:textSize="16sp"
+
         android:textStyle="bold"
+
         app:cornerRadius="8dp"
+
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintStart_toStartOf="parent"
+
         app:layout_constraintTop_toBottomOf="@id/tv_forgot_password"
+
         tools:ignore="HardcodedText" />
 
+
+
     <!-- Botão CRIAR CONTA (Borda Vermelha) -->
+
     <com.google.android.material.button.MaterialButton
+
         android:id="@+id/createAccountButton"
+
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+
         android:layout_width="0dp"
+
         android:layout_height="60dp"
+
         android:layout_marginHorizontal="32dp"
+
         android:layout_marginTop="16dp"
+
         android:text="Criar nova conta"
+
         android:textColor="@color/guardway_red"
+
+        android:backgroundTint="@color/white"
+
         app:cornerRadius="8dp"
+
         app:strokeColor="@color/guardway_red"
+
         app:strokeWidth="2dp"
+
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintStart_toStartOf="parent"
+
         app:layout_constraintTop_toBottomOf="@id/loginButton"
+
         tools:ignore="HardcodedText" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
