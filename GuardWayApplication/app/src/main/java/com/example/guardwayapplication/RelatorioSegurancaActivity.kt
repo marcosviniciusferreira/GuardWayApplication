@@ -19,16 +19,16 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RelatorioSegurancaActivity : AppCompatActivity() {
 
     // Constante para o limite de risco (pode ser ajustada)
-    private val RISCO_ALTO_THRESHOLD = 50
+    private val RISCO_ALTO_THRESHOLD = 10
     private val BASE_URL = "http://192.168.1.4/"
 
     // UI Components
     private lateinit var tvEnderecoRelatorio: TextView
     private lateinit var tvEstadoRelatorio: TextView
     private lateinit var tvNivelRisco: TextView
-    private lateinit var tvRoubosCarro: TextView
-    private lateinit var tvRoubosCelular: TextView
-    private lateinit var tvAssaltos: TextView
+    private lateinit var tvFurtoRoubos: TextView
+    private lateinit var tvVandalismo: TextView
+    private lateinit var tvAssedio: TextView
     private lateinit var tvAtividadeSuspeita: TextView
     private lateinit var llOcorrenciasRecentes: LinearLayout // Container para a lista
     private lateinit var btnBack: ImageButton
@@ -70,9 +70,9 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
         tvEnderecoRelatorio = findViewById(R.id.tv_endereco_relatorio)
         tvEstadoRelatorio = findViewById(R.id.tv_estado_relatorio)
         tvNivelRisco = findViewById(R.id.tv_nivel_risco)
-        tvRoubosCarro = findViewById(R.id.tv_roubos_carro)
-        tvRoubosCelular = findViewById(R.id.tv_roubos_celular)
-        tvAssaltos = findViewById(R.id.tv_assaltos)
+        tvFurtoRoubos = findViewById(R.id.tv_roubo_furto)
+        tvVandalismo = findViewById(R.id.tv_vandalismo)
+        tvAssedio = findViewById(R.id.tv_assedio)
         tvAtividadeSuspeita = findViewById(R.id.tv_atividade_suspeita)
         llOcorrenciasRecentes = findViewById(R.id.ll_ocorrencias_recentes)
         btnBack = findViewById(R.id.btn_back)
@@ -105,9 +105,9 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
 
     private fun clearStatisticViews() {
         tvNivelRisco.text = "Carregando..."
-        tvRoubosCarro.text = "..."
-        tvRoubosCelular.text = "..."
-        tvAssaltos.text = "..."
+        tvFurtoRoubos.text = "..."
+        tvVandalismo.text = "..."
+        tvAssedio.text = "..."
         tvAtividadeSuspeita.text = "..."
         llOcorrenciasRecentes.removeAllViews() // Limpa os includes estáticos
         llOcorrenciasRecentes.visibility = View.GONE
@@ -124,7 +124,6 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
         Log.d("RelatorioSeguranca", "Buscando relatório para o CEP: $cep")
         tvNivelRisco.text = "Avaliando..."
 
-        // 🟢 CORRIGIDO: Referencia ApiService.RelatorioSegurancaResponse (Linha 151)
         apiService.getRelatorioSeguranca(cep)
             .enqueue(object : Callback<ApiService.RelatorioSegurancaResponse> {
                 override fun onResponse(
@@ -147,9 +146,9 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                     setRiskLevel("Erro de Rede", android.R.color.darker_gray)
-                    tvRoubosCarro.text = "N/A"
-                    tvRoubosCelular.text = "N/A"
-                    tvAssaltos.text = "N/A"
+                    tvFurtoRoubos.text = "N/A"
+                    tvVandalismo.text = "N/A"
+                    tvAssedio.text = "N/A"
                     tvAtividadeSuspeita.text = "N/A"
                 }
             })
@@ -157,9 +156,9 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
 
     private fun updateReportUI(report: ApiService.RelatorioSegurancaResponse) {
         // 1. Atualiza as estatísticas
-        tvRoubosCarro.text = report.roubosCarroCount.toString()
-        tvRoubosCelular.text = report.roubosCelularCount.toString()
-        tvAssaltos.text = report.assaltosCount.toString()
+        tvFurtoRoubos.text = report.furtoRouboCount.toString()
+        tvVandalismo.text = report.vandalismoCount.toString()
+        tvAssedio.text = report.assedioCount.toString()
         tvAtividadeSuspeita.text = report.atividadeSuspeitaCount.toString()
 
         // 2. Calcula e define o Nível de Risco

@@ -159,12 +159,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Roubos de carro"
+                            android:text="Roubos/Furtos"
                             android:textColor="@android:color/darker_gray"
                             android:textSize="14sp" />
 
                         <TextView
-                            android:id="@+id/tv_roubos_carro"
+                            android:id="@+id/tv_roubo_furto"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#9F2220"
@@ -191,12 +191,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Roubos de celular"
+                            android:text="Vandalismo"
                             android:textColor="@android:color/darker_gray"
                             android:textSize="14sp" />
 
                         <TextView
-                            android:id="@+id/tv_roubos_celular"
+                            android:id="@+id/tv_vandalismo"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#9F2220"
@@ -223,12 +223,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Assaltos"
+                            android:text="Assédio"
                             android:textColor="@android:color/darker_gray"
                             android:textSize="14sp" />
 
                         <TextView
-                            android:id="@+id/tv_assaltos"
+                            android:id="@+id/tv_assedio"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#9F2220"

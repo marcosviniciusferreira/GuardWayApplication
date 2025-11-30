@@ -1,13 +1,11 @@
 import com.example.guardwayapplication.LoginResponse
 import com.example.guardwayapplication.Usuario
-import com.example.guardwayapplication.UsuarioMainActivity
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -49,14 +47,14 @@ interface ApiService {
     @POST("/apis/create_ocorrencia.php")
     fun createOcorrencia(@Body Ocorrencia: Ocorrencia): Call<SuccessResponse>
 
-    @GET("relatorio_seguranca/{cep}")
+    @GET("/apis/relatorio_seguranca.php/")
     fun getRelatorioSeguranca(@Query("cep") cep: String): Call<RelatorioSegurancaResponse>
+
     data class SuccessResponse(
         val success: Boolean,
         val message: String?
     )
 
-    // NO SEU ARQUIVO ApiService.kt
     data class OcorrenciaGroupedItem(
         val tipo_ocorrencia: String, // Ex: "Roubos de carro"
         val count: Int
@@ -64,13 +62,12 @@ interface ApiService {
 
     data class RelatorioSegurancaResponse(
         // Estatísticas resumidas
-        val roubosCarroCount: Int,
-        val roubosCelularCount: Int,
-        val assaltosCount: Int,
+        val furtoRouboCount: Int,
+        val vandalismoCount: Int,
+        val assedioCount: Int,
         val atividadeSuspeitaCount: Int,
         val totalOcorrencias: Int, // Total geral
 
-        // Lista para a seção "Ocorrências Recentes" (Exemplo, você pode usar o mesmo OcorrenciaItem da outra Activity)
         val ocorrenciasRecentes: List<OcorrenciaItem> // Assumindo que OcorrenciaItem já está definido
     )
 

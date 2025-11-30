@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -27,6 +28,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
+import com.google.gson.Gson // Importa o GSON para logs de debug
 
 class OccurrenceFormActivity : AppCompatActivity() {
 
@@ -53,7 +55,7 @@ class OccurrenceFormActivity : AppCompatActivity() {
         "Vandalismo",
         "Agressão",
         "Invasão",
-        "Suspeita de Atividade Ilegal",
+        "Atividade Suspeita",
         "Assédio",
         "Outros (Relacionados à Segurança)"
     )
@@ -69,14 +71,12 @@ class OccurrenceFormActivity : AppCompatActivity() {
     private var isEditing: Boolean = false
     private var ocorrenciaId: Int? = null
 
-    // ⭐️ LOGGED_IN_USER_ID AGORA É UMA VARIÁVEL MUTÁVEL ⭐️
     private var LOGGED_IN_USER_ID = 0 // Inicializado como 0, será preenchido pelo SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_occurrence_form)
 
-        // ⭐️ CHAMA A FUNÇÃO PARA BUSCAR O ID DO USUÁRIO ⭐️
         getUserIdFromSharedPreferences()
 
         // Inicialização da API Places (Manter a chave hardcoded, mas atenção para segurança)
@@ -253,7 +253,10 @@ class OccurrenceFormActivity : AppCompatActivity() {
             }
 
             // Define dados de localização existentes
+            // Usamos o endereço da própria ocorrência
             enderecoSelecionado = ocorrenciaParaEditar.endereco ?: "${ocorrenciaParaEditar.latitude}, ${ocorrenciaParaEditar.longitude}"
+            // ⚠️ Cuidado: Se latitude e longitude são Strings na classe Ocorrencia, o toDoubleOrNull é essencial.
+            // Vou assumir que sua classe Ocorrencia.kt tem latitude e longitude como String, mas o banco espera Double.
             latSelecionada = ocorrenciaParaEditar.latitude.toDoubleOrNull() ?: 0.0
             lngSelecionada = ocorrenciaParaEditar.longitude.toDoubleOrNull() ?: 0.0
             cepSelecionado = ocorrenciaParaEditar.CEP
@@ -326,7 +329,6 @@ class OccurrenceFormActivity : AppCompatActivity() {
         }
 
         // 4. Validação do ID do Usuário
-        // ⭐️ AGORA VERIFICA O ID LIDO DO SHARED PREFERENCES ⭐️
         if (LOGGED_IN_USER_ID == 0) {
             Toast.makeText(this, "ID do usuário não encontrado. Faça login novamente.", Toast.LENGTH_LONG).show()
             return
@@ -336,19 +338,20 @@ class OccurrenceFormActivity : AppCompatActivity() {
 
         val ocorrenciaPayload = Ocorrencia(
             id_ocorrencia = ocorrenciaId,
-            id_usuario = LOGGED_IN_USER_ID, // Usando o ID lido do SharedPreferences
+            id_usuario = LOGGED_IN_USER_ID,
             tipo_ocorrencia = tipoOcorrencia,
             descricao = descricao,
-            data_hora = dataHora, // Enviando a data e hora combinadas
-            latitude = latSelecionada.toString(),
-            longitude = lngSelecionada.toString(),
-            CEP = cep, // Usando a variável validada 'cep'
-            endereco = endereco // Usando a variável validada 'endereco'
+            data_hora = dataHora,
+            latitude = latSelecionada.toString(), // ⚠️ Certifique-se de que a classe Ocorrencia.kt aceita String aqui
+            longitude = lngSelecionada.toString(), // ⚠️ E aqui
+            CEP = cep,
+            endereco = endereco // Campo Endereço
             // validada e caminho_arquivo usarão valores padrão da classe Ocorrencia
         )
 
-        // DEBUG: Imprime o JSON Payload antes de enviar
-        Log.d(API_LOG_TAG, "Payload enviado: ${ocorrenciaPayload.toString()}")
+        // DEBUG: Imprime o JSON Payload ANTES de enviar usando GSON (confirma o que será serializado)
+        val gson = Gson()
+        Log.d(API_LOG_TAG, "JSON Payload para API: ${gson.toJson(ocorrenciaPayload)}")
 
         val call: Call<ApiService.SuccessResponse> = if (isEditing) {
             apiService.updateOcorrencia(ocorrenciaPayload)
@@ -362,7 +365,7 @@ class OccurrenceFormActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body()?.success == true) {
                     Toast.makeText(this@OccurrenceFormActivity, message, Toast.LENGTH_SHORT).show()
                     setResult(RESULT_OK)
-                    finish()
+                    finish() // ✅ Termina a Activity APÓS SUCESSO
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "Corpo do erro não disponível"
                     Log.e(API_LOG_TAG, "Code: ${response.code()}, Message: $message, Body: $errorBody")
@@ -375,8 +378,5 @@ class OccurrenceFormActivity : AppCompatActivity() {
                 Toast.makeText(this@OccurrenceFormActivity, "Falha de conexão: ${t.message}", Toast.LENGTH_LONG).show()
             }
         })
-
-        val intent = Intent(this, UsuarioMainActivity::class.java)
-        startActivity(intent)
     }
 }
