@@ -13,7 +13,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".UsuarioMainActivity">
 
         <fragment
             android:id="@+id/map_fragment"
@@ -68,6 +68,7 @@
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
+
         <LinearLayout
             android:id="@+id/bottom_sheet"
             android:layout_width="match_parent"
@@ -101,17 +102,26 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_perigo_status"
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:backgroundTint="@color/black"
-                android:text="PERIGOSO\n12 ocorrências"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@android:color/darker_gray"
+                android:text="Avaliando..."
                 android:textColor="@color/white"
-                android:textSize="16sp"
-                app:cornerRadius="12dp"
-                app:iconTint="@color/white"
-                app:iconGravity="textStart"
-                android:paddingStart="24dp"
-                android:layout_marginBottom="12dp"/>
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:cornerRadius="8dp"
+                tools:text="SEGURO\n3 ocorrências"/>
 
+
+            <LinearLayout
+                android:id="@+id/ll_ocorrencias_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp"
+                tools:minHeight="50dp">
+            </LinearLayout>
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_emergency_call"
                 android:layout_width="match_parent"
@@ -129,6 +139,31 @@
 
         </LinearLayout>
 
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cadastrar_ocorrencia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cadastrar Ocorrência"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="12dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/black"
+            android:elevation="12dp"
+            app:elevation="12dp"
+            app:cornerRadius="28dp"
+            app:icon="@drawable/ic_add_ocorrencia"
+            app:iconTint="@color/white"
+            app:iconGravity="textStart"
+            android:layout_gravity="end"
+            app:layout_anchor="@id/bottom_sheet"
+            app:layout_anchorGravity="top|end"
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+            tools:ignore="HardcodedText"/>
+
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
@@ -137,7 +172,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer" />
+        app:headerLayout="@layout/nav_header_usuario"
+        app:menu="@menu/activity_usuario_drawer" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

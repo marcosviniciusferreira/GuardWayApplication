@@ -2,6 +2,7 @@ package com.example.guardwayapplication
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 
 class SharedPreferencesManager(context: Context) {
 
@@ -11,13 +12,12 @@ class SharedPreferencesManager(context: Context) {
 
     companion object {
         private const val PREF_NAME = "GuardWayPrefs"
-        // Novas chaves
+        // Chaves que serão usadas para salvar/ler os dados
         private const val KEY_USER_ID = "user_id"
         private const val KEY_USER_NAME = "user_name"
         private const val KEY_USER_EMAIL = "user_email"
         private const val KEY_USER_CPF = "user_cpf"
     }
-
     fun saveUserData(
         id: Int,
         nome: String,
@@ -29,10 +29,16 @@ class SharedPreferencesManager(context: Context) {
         editor.putString(KEY_USER_EMAIL, email)
         editor.putString(KEY_USER_CPF, cpf)
         editor.apply()
+        Log.d("PrefsManager", "ID: $id salvo em $KEY_USER_ID, Arquivo: $PREF_NAME")
     }
 
+    /**
+     * Retorna o ID do usuário logado.
+     * Retorna 0 se a chave não existir ou se o usuário não estiver logado.
+     */
     fun getUserId(): Int {
-        return sharedPrefs.getInt(KEY_USER_ID, -1)
+        // ⭐️ CORREÇÃO: Usando 0 como valor padrão, conforme esperado pela Activity ⭐️
+        return sharedPrefs.getInt(KEY_USER_ID, 0)
     }
 
     fun getUserName(): String? {
@@ -53,5 +59,6 @@ class SharedPreferencesManager(context: Context) {
     fun clearData() {
         editor.clear()
         editor.apply()
+        Log.d("PrefsManager", "Dados do usuário limpos (logout).")
     }
 }

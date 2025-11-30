@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
         // Listener para o ícone de voltar
         toolbarLogin.setNavigationOnClickListener {
             // Navega para a Activity VisitanteMainActivity
-            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+            val intent = Intent(this@LoginActivity, VisitanteMainActivity::class.java)
             startActivity(intent)
             finish() // Fecha a tela de Login para não ficar na pilha
         }
@@ -60,10 +60,10 @@ class LoginActivity : AppCompatActivity() {
         // Define a Toolbar customizada como a ActionBar principal
         setSupportActionBar(toolbarLogin)
 
-// 🌟 ESTA LINHA É CRÍTICA: Desativa a exibição do título padrão
+        // 🌟 ESTA LINHA É CRÍTICA: Desativa a exibição do título padrão
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-// Garante que o título interno da Toolbar esteja nulo (redundante, mas seguro)
+        // Garante que o título interno da Toolbar esteja nulo (redundante, mas seguro)
         toolbarLogin.title = null
 
         // 3. Listeners de clique
@@ -87,13 +87,14 @@ class LoginActivity : AppCompatActivity() {
         val password = passwordEditText.text.toString().trim()
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Preencha e-mail e senha para continuar.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Preencha e-mail e senha para continuar.", Toast.LENGTH_SHORT)
+                .show()
             return
         }
 
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.1.15/")
+            .baseUrl("http://192.168.1.4/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -115,6 +116,7 @@ class LoginActivity : AppCompatActivity() {
                         val userData = loginResponses.first()
 
                         // 🌟 SALVA TODOS OS DADOS DO USUÁRIO NO SHARED PREFERENCES
+                        // O método saveUserData DEVE usar a chave "USER_ID" para o ID
                         prefsManager.saveUserData(
                             id = userData.usuarioId,
                             nome = userData.usuarioNome,
@@ -122,24 +124,37 @@ class LoginActivity : AppCompatActivity() {
                             cpf = userData.usuarioCpf
                         )
 
-                        Toast.makeText(this@LoginActivity, "Login sucesso! Bem-vindo, ${userData.usuarioNome}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Login sucesso! Bem-vindo, ${userData.usuarioNome}",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
-                        // Navega de volta para a Activity Principal (mapa)
-                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        val intent = Intent(this@LoginActivity, UsuarioMainActivity::class.java)
                         startActivity(intent)
                         finish() // Fecha a tela de Login
 
                     } else {
-                        Toast.makeText(this@LoginActivity, "Usuário ou senha inválidos", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Usuário ou senha inválidos",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 } else {
-                    Toast.makeText(this@LoginActivity, "Erro no login: Status ${response.code()}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Erro no login: Status ${response.code()}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 
             override fun onFailure(call: Call<List<LoginResponse>>, t: Throwable) {
-                Toast.makeText(this@LoginActivity, "Erro de conexão: ${t.message}",
-                    Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@LoginActivity, "Erro de conexão: ${t.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         })
     }

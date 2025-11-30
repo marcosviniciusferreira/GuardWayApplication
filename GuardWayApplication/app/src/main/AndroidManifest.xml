@@ -12,7 +12,7 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".VisitanteMainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,6 +20,9 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".UsuarioMainActivity"
+            android:exported="false"/>
 
         <activity
             android:name=".UserListActivity"

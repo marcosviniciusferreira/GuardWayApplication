@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_minha_conta"
+            android:icon="@drawable/ic_menu_login"
+            android:title="Minha Conta" />
+
+        <item
+            android:id="@+id/nav_minhas_ocorrencias"
+            android:icon="@drawable/ic_ocorrencias"
+            android:title="Minhas Ocorrências" />
+
+        <item
+            android:id="@+id/nav_relatorio_seguranca"
+            android:icon="@drawable/ic_relatorio_seguranca"
+            android:title="Relatório de Segurança" />
+
+        <item
+            android:id="@+id/nav_chamar_emergencia"
+            android:icon="@drawable/ic_menu_emergency"
+            android:title="Chamar Emergência" />
+
+    </group>
+
+    <item android:title="Informações">
+        <menu>
+            <item
+                android:id="@+id/nav_sobre_nos"
+                android:icon="@drawable/ic_menu_info"
+                android:title="Sobre Nós" />
+            <item
+                android:id="@+id/nav_ajuda"
+                android:icon="@drawable/ic_menu_help"
+                android:title="Central de Ajuda" />
+        </menu>
+    </item>
+
+</menu>

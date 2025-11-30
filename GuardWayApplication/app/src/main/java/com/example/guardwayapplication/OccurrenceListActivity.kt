@@ -34,7 +34,7 @@ class OccurrenceListActivity : AppCompatActivity(), OnOccurrenceActionsListener 
     private lateinit var btnAddOccurrence: FloatingActionButton
 
     private lateinit var apiService: ApiService
-    private val BASE_URL = "http://192.168.1.15/" // Base URL do seu servidor
+    private val BASE_URL = "http://192.168.1.4/" // Base URL do seu servidor
 
     // Launcher para iniciar o formulário de ocorrência e esperar pelo resultado
     private val formLauncher = registerForActivityResult(

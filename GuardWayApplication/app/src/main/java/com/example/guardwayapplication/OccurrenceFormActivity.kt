@@ -4,14 +4,16 @@ import ApiService
 import Ocorrencia
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import android.widget.Spinner
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -59,19 +61,23 @@ class OccurrenceFormActivity : AppCompatActivity() {
     private var enderecoSelecionado: String = ""
     private var latSelecionada: Double = 0.0
     private var lngSelecionada: Double = 0.0
-    private var cepSelecionado: String = "" // Inicia como vazio
+    private var cepSelecionado: String = ""
 
     // TAG para Logs de Erro de API/Dados
     private val API_LOG_TAG = "API_PAYLOAD"
 
     private var isEditing: Boolean = false
     private var ocorrenciaId: Int? = null
-    // O ID do usuário logado é crucial para a validação do PHP.
-    private val LOGGED_IN_USER_ID = 5
+
+    // ⭐️ LOGGED_IN_USER_ID AGORA É UMA VARIÁVEL MUTÁVEL ⭐️
+    private var LOGGED_IN_USER_ID = 0 // Inicializado como 0, será preenchido pelo SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_occurrence_form)
+
+        // ⭐️ CHAMA A FUNÇÃO PARA BUSCAR O ID DO USUÁRIO ⭐️
+        getUserIdFromSharedPreferences()
 
         // Inicialização da API Places (Manter a chave hardcoded, mas atenção para segurança)
         if (!Places.isInitialized()) {
@@ -149,7 +155,7 @@ class OccurrenceFormActivity : AppCompatActivity() {
 
         val retrofit = Retrofit.Builder()
             // ATENÇÃO: Se estiver testando no emulador, o IP é 10.0.2.2. Se for celular, use o IP da sua máquina.
-            .baseUrl("http://192.168.1.15/")
+            .baseUrl("http://192.168.1.4/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         apiService = retrofit.create(ApiService::class.java)
@@ -163,6 +169,18 @@ class OccurrenceFormActivity : AppCompatActivity() {
         if (!isEditing) {
             updateDateLabel(calendar)
             updateTimeLabel(calendar)
+        }
+    }
+
+    private fun getUserIdFromSharedPreferences() {
+        val sharedPreferences = getSharedPreferences("GuardWayPrefs", Context.MODE_PRIVATE)
+        // Obtém o ID. O valor padrão (0) é usado se a chave "USER_ID" não for encontrada.
+        LOGGED_IN_USER_ID = sharedPreferences.getInt("user_id", 0)
+
+        if (LOGGED_IN_USER_ID == 0) {
+            Log.e(API_LOG_TAG, "LOGGED_IN_USER_ID não encontrado no SharedPreferences. Usando 0.")
+        } else {
+            Log.d(API_LOG_TAG, "LOGGED_IN_USER_ID carregado: $LOGGED_IN_USER_ID")
         }
     }
 
@@ -220,7 +238,7 @@ class OccurrenceFormActivity : AppCompatActivity() {
 
             txtDescricao.setText(ocorrenciaParaEditar.descricao)
 
-            // NOVO: Parse e ajuste dos campos de Data e Hora para edição
+            // Parse e ajuste dos campos de Data e Hora para edição
             try {
                 val fullDateTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                 val date = fullDateTimeFormat.parse(ocorrenciaParaEditar.data_hora)
@@ -234,7 +252,7 @@ class OccurrenceFormActivity : AppCompatActivity() {
                 Toast.makeText(this, "Data/Hora inválida na edição.", Toast.LENGTH_SHORT).show()
             }
 
-
+            // Define dados de localização existentes
             enderecoSelecionado = ocorrenciaParaEditar.endereco ?: "${ocorrenciaParaEditar.latitude}, ${ocorrenciaParaEditar.longitude}"
             latSelecionada = ocorrenciaParaEditar.latitude.toDoubleOrNull() ?: 0.0
             lngSelecionada = ocorrenciaParaEditar.longitude.toDoubleOrNull() ?: 0.0
@@ -249,6 +267,27 @@ class OccurrenceFormActivity : AppCompatActivity() {
             ocorrenciaId = null
             // Garante que a primeira opção ("Selecione o Tipo") esteja selecionada ao criar
             spnTipoOcorrencia.setSelection(0)
+
+            // LÓGICA DE PREENCHIMENTO AUTOMÁTICO DO ENDEREÇO
+            val initialLatitude = intent.getDoubleExtra("latitude", 0.0)
+            val initialLongitude = intent.getDoubleExtra("longitude", 0.0)
+            val initialAddress = intent.getStringExtra("endereco")
+            val initialCep = intent.getStringExtra("cep")
+
+            if (initialAddress != null && initialAddress.isNotEmpty() && initialLatitude != 0.0) {
+
+                // 1. Define as variáveis de localização da Activity
+                enderecoSelecionado = initialAddress
+                latSelecionada = initialLatitude
+                lngSelecionada = initialLongitude
+                cepSelecionado = initialCep ?: "" // Usa o CEP enviado ou vazio
+
+                // 2. Preenche o campo de busca com o endereço completo
+                autocompleteFragment.setText(initialAddress)
+
+                Log.d("IntentData", "Localização inicial carregada: $initialAddress")
+                Toast.makeText(this, "Localização inicial do mapa preenchida.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -287,18 +326,17 @@ class OccurrenceFormActivity : AppCompatActivity() {
         }
 
         // 4. Validação do ID do Usuário
+        // ⭐️ AGORA VERIFICA O ID LIDO DO SHARED PREFERENCES ⭐️
         if (LOGGED_IN_USER_ID == 0) {
-            Toast.makeText(this, "ID do usuário não definido. Não é possível registrar.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "ID do usuário não encontrado. Faça login novamente.", Toast.LENGTH_LONG).show()
             return
         }
 
         // --- FIM DA VALIDAÇÃO REFORÇADA ---
 
-        // ATENÇÃO: Simplificando o Payload na criação
-        // Removendo validada=0 e caminho_arquivo="aaaa" e usando valores padrão do construtor.
         val ocorrenciaPayload = Ocorrencia(
             id_ocorrencia = ocorrenciaId,
-            id_usuario = LOGGED_IN_USER_ID,
+            id_usuario = LOGGED_IN_USER_ID, // Usando o ID lido do SharedPreferences
             tipo_ocorrencia = tipoOcorrencia,
             descricao = descricao,
             data_hora = dataHora, // Enviando a data e hora combinadas
@@ -313,8 +351,6 @@ class OccurrenceFormActivity : AppCompatActivity() {
         Log.d(API_LOG_TAG, "Payload enviado: ${ocorrenciaPayload.toString()}")
 
         val call: Call<ApiService.SuccessResponse> = if (isEditing) {
-            // Se estiver editando, você pode precisar passar validada e caminho_arquivo
-            // dependendo de como o método updateOcorrencia está definido no ApiService.
             apiService.updateOcorrencia(ocorrenciaPayload)
         } else {
             apiService.createOcorrencia(ocorrenciaPayload)
@@ -339,5 +375,8 @@ class OccurrenceFormActivity : AppCompatActivity() {
                 Toast.makeText(this@OccurrenceFormActivity, "Falha de conexão: ${t.message}", Toast.LENGTH_LONG).show()
             }
         })
+
+        val intent = Intent(this, UsuarioMainActivity::class.java)
+        startActivity(intent)
     }
 }
