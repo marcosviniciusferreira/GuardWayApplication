@@ -1,6 +1,6 @@
 package com.example.guardwayapplication
 
-import ApiService // Certifique-se de que ApiService e os modelos estão aqui
+import ApiService
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -16,30 +16,11 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-// ⚠️ Se RelatorioSegurancaResponse e OcorrenciaItem não estão em ApiService.kt, copie-os para cá
-// ou garanta que estejam no escopo de importação.
-// Vamos assumir aqui que você já os definiu.
-data class OcorrenciaItem( // Exemplo básico, ajuste conforme seu ApiService
-    val id_ocorrencia: Int,
-    val tipo_ocorrencia: String,
-    val endereco: String?,
-    val data: String // Data da ocorrência
-)
-
-data class RelatorioSegurancaResponse(
-    val roubosCarroCount: Int,
-    val roubosCelularCount: Int,
-    val assaltosCount: Int,
-    val atividadeSuspeitaCount: Int,
-    val totalOcorrencias: Int,
-    val ocorrenciasRecentes: List<OcorrenciaItem>
-)
-
 class RelatorioSegurancaActivity : AppCompatActivity() {
 
     // Constante para o limite de risco (pode ser ajustada)
     private val RISCO_ALTO_THRESHOLD = 50
-    private val BASE_URL = "http://192.168.1.4/" // ⚠️ Use a URL base correta
+    private val BASE_URL = "http://192.168.1.4/"
 
     // UI Components
     private lateinit var tvEnderecoRelatorio: TextView
@@ -132,9 +113,6 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
         llOcorrenciasRecentes.visibility = View.GONE
     }
 
-    /**
-     * Faz a chamada real à API para buscar o relatório de segurança por CEP.
-     */
     private fun fetchSecurityReport() {
         val cep = currentCEP
         if (cep == null) {
@@ -146,12 +124,12 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
         Log.d("RelatorioSeguranca", "Buscando relatório para o CEP: $cep")
         tvNivelRisco.text = "Avaliando..."
 
-        // ⚠️ CHAMADA RETROFIT REAL
+        // 🟢 CORRIGIDO: Referencia ApiService.RelatorioSegurancaResponse (Linha 151)
         apiService.getRelatorioSeguranca(cep)
-            .enqueue(object : Callback<RelatorioSegurancaResponse> {
+            .enqueue(object : Callback<ApiService.RelatorioSegurancaResponse> {
                 override fun onResponse(
-                    call: Call<RelatorioSegurancaResponse>,
-                    response: Response<RelatorioSegurancaResponse>
+                    call: Call<ApiService.RelatorioSegurancaResponse>,
+                    response: Response<ApiService.RelatorioSegurancaResponse>
                 ) {
                     if (response.isSuccessful && response.body() != null) {
                         val report = response.body()!!
@@ -161,7 +139,7 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<RelatorioSegurancaResponse>, t: Throwable) {
+                override fun onFailure(call: Call<ApiService.RelatorioSegurancaResponse>, t: Throwable) {
                     Log.e("RelatorioSeguranca", "Falha na API: ${t.message}")
                     Toast.makeText(
                         this@RelatorioSegurancaActivity,
@@ -170,15 +148,14 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
                     ).show()
                     setRiskLevel("Erro de Rede", android.R.color.darker_gray)
                     tvRoubosCarro.text = "N/A"
-                    // ... (outros textos N/A)
+                    tvRoubosCelular.text = "N/A"
+                    tvAssaltos.text = "N/A"
+                    tvAtividadeSuspeita.text = "N/A"
                 }
             })
     }
 
-    /**
-     * Atualiza todos os componentes da UI com os dados do relatório.
-     */
-    private fun updateReportUI(report: RelatorioSegurancaResponse) {
+    private fun updateReportUI(report: ApiService.RelatorioSegurancaResponse) {
         // 1. Atualiza as estatísticas
         tvRoubosCarro.text = report.roubosCarroCount.toString()
         tvRoubosCelular.text = report.roubosCelularCount.toString()
@@ -187,29 +164,29 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
 
         // 2. Calcula e define o Nível de Risco
         val total = report.totalOcorrencias
-        val riskText = if (total > RISCO_ALTO_THRESHOLD) "ALTO" else "BAIXO"
+        val riskText = when {
+            total > RISCO_ALTO_THRESHOLD -> "RISCO ALTO"
+            total > RISCO_ALTO_THRESHOLD / 2 -> "RISCO MODERADO"
+            else -> "RISCO BAIXO"
+        }
+
 
         val colorResId = when {
-            total > RISCO_ALTO_THRESHOLD -> R.color.black // Usando a cor #9F2220 do layout
+            total > RISCO_ALTO_THRESHOLD -> R.color.black // Usando a cor black temporariamente
             total > RISCO_ALTO_THRESHOLD / 2 -> android.R.color.holo_orange_dark
             else -> android.R.color.holo_green_dark
         }
 
-        // ⚠️ Nota: Como seu XML usa a cor sólida #9F2220, vamos usá-la como referência.
-        // Se R.color.red_guardway não existe, use ContextCompat.getColor(this, R.color.SEU_VERMELHO)
         setRiskLevel(riskText, colorResId)
 
 
         // 3. Atualiza as ocorrências recentes
-        // Remove os includes estáticos e preenche dinamicamente (IMPLEMENTAÇÃO BÁSICA)
         llOcorrenciasRecentes.removeAllViews()
         if (report.ocorrenciasRecentes.isNotEmpty()) {
             llOcorrenciasRecentes.visibility = View.VISIBLE
             report.ocorrenciasRecentes.forEach { item ->
-                // ⚠️ A forma ideal é inflar "item_ocorrencia_recente.xml"
-                // Para manter a implementação simples por agora, vamos adicionar um TextView
                 val tv = TextView(this).apply {
-                    text = "• ${item.tipo_ocorrencia} em ${item.data}"
+                    text = "• ${item.tipo_ocorrencia} em ${item.endereco ?: "Local Desconhecido"}"
                     setTextColor(ContextCompat.getColor(context, android.R.color.black))
                     setPadding(0, 8, 0, 8)
                 }
@@ -232,18 +209,16 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
     private fun setRiskLevel(text: String, colorResId: Int) {
         tvNivelRisco.text = text
 
-        // Encontra o CardView pai para mudar a cor de fundo
-        val riskCard = findViewById<View>(R.id.tv_nivel_risco).parent.parent as? androidx.cardview.widget.CardView
+        // Encontra o CardView pai e o LinearLayout interno
         val riskLinearLayout = findViewById<View>(R.id.tv_nivel_risco).parent as? LinearLayout
 
-        // Tenta aplicar a cor ao LinearLayout interno que tem o background="#9F2220"
         if (riskLinearLayout != null) {
             try {
-                // Tenta usar a cor #9F2220 como base para cor primária, mas ajusta dinamicamente
+                // Tenta aplicar a cor dinâmica
                 val color = ContextCompat.getColor(this, colorResId)
                 riskLinearLayout.setBackgroundColor(color)
             } catch (e: Exception) {
-                // Caso a cor não exista no R.color, usa o padrão do Android
+                Log.e("RelatorioSeguranca", "Cor não encontrada. Usando vermelho padrão.")
                 val color = ContextCompat.getColor(this, android.R.color.holo_red_dark)
                 riskLinearLayout.setBackgroundColor(color)
             }

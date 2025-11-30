@@ -37,6 +37,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".RelatorioSegurancaActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".LoginActivity"
             android:exported="false" />
 

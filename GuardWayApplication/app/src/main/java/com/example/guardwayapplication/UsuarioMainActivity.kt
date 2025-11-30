@@ -294,19 +294,24 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
     }
 
     private fun navigateToRelatorioSeguranca() {
-        if (currentCEP == null || currentFullAddress == null) {
-            Toast.makeText(this, "Aguarde, a localização ainda está sendo processada.", Toast.LENGTH_SHORT).show()
-            return
-        }
+        // 1. Define valores de fallback se a busca assíncrona ainda estiver incompleta
+        val cepToPass = currentCEP ?: "00000-000" // Valor padrão/vazio para CEP
+        val addressToPass = currentFullAddress ?: "Localização em processamento"
 
+        // 2. Cria o Intent
         val intent = Intent(this, RelatorioSegurancaActivity::class.java)
 
-        // Passa os dados de endereço e CEP para a Activity de Relatório
-        intent.putExtra("endereco", currentFullAddress)
-        intent.putExtra("cep", currentCEP)
+        // Passa os dados (podendo ser o fallback)
+        intent.putExtra("endereco", addressToPass)
+        intent.putExtra("cep", cepToPass)
 
         startActivity(intent)
-        Toast.makeText(this, "Abrindo Relatório de Segurança...", Toast.LENGTH_SHORT).show()
+
+        if (currentCEP == null || currentFullAddress == null) {
+            Toast.makeText(this, "Abrindo Relatório. Dados iniciais podem estar incompletos.", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Abrindo Relatório de Segurança...", Toast.LENGTH_SHORT).show()
+        }
     }
 
 
@@ -328,7 +333,7 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         // Redireciona para a tela inicial (VisitanteMainActivity)
         val intent = Intent(this, VisitanteMainActivity::class.java)
         intent.flags =
-            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK // Limpa a pilha
+            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }
