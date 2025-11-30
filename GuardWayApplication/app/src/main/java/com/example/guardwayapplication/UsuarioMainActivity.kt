@@ -384,7 +384,8 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_minha_conta -> {
-                // TODO: Implementar MinhaContaActivity
+                val intent = Intent(this, PerfilActivity::class.java)
+                startActivity(intent)
                 Toast.makeText(this, "Navegando para Minha Conta...", Toast.LENGTH_SHORT).show()
             }
 

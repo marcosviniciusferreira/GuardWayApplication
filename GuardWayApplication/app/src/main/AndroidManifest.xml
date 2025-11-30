@@ -33,6 +33,10 @@
             android:exported="false"/>
 
         <activity
+            android:name=".PerfilActivity"
+            android:exported="false"/>
+
+        <activity
             android:name=".UserFormActivity"
             android:exported="false" />
 
