@@ -11,7 +11,7 @@
         android:text="Tipos de Ocorrências (Último Mês):"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/guardway_red"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="8dp"/>
 
@@ -27,7 +27,7 @@
         android:id="@+id/btn_emergency_call"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:backgroundTint="@color/black"
+        android:backgroundTint="@color/guardway_red"
         android:text="CHAMADA DE EMERGÊNCIA"
         android:textColor="@color/white"
         android:textSize="16sp"

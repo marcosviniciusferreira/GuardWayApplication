@@ -15,19 +15,19 @@
         android:background="#9F2220"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/btn_back"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Voltar"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="16dp"
             android:src="@drawable/ic_arrow_back"
+            app:tint="@color/white"
+            android:contentDescription="Voltar"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/white" />
+
+            app:layout_constraintStart_toStartOf="parent"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -39,16 +39,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/ic_menu_login"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -64,14 +55,17 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="Relatório de Segurança"
+                android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="25sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:layout_gravity="center_horizontal" />
 
             <TextView
                 android:id="@+id/tv_endereco_relatorio"
@@ -80,6 +74,7 @@
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:textColor="@color/black"
+                android:layout_gravity="center_horizontal"
                 tools:text="Av. Atlântica, 2300" />
 
             <TextView
@@ -88,8 +83,9 @@
                 android:layout_height="wrap_content"
                 android:textStyle="normal"
                 android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@android:color/black"
                 android:layout_marginBottom="16dp"
+                android:layout_gravity="center_horizontal"
                 tools:text="São Paulo, SP" />
 
             <androidx.cardview.widget.CardView
@@ -100,9 +96,10 @@
                 app:cardElevation="4dp">
 
                 <LinearLayout
+                    android:id="@+id/ll_nivel_risco_container"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#9F2220"
+                    android:layout_height="95dp"
+                    android:background="@color/guardway_red"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:padding="16dp">
@@ -120,7 +117,7 @@
                         android:layout_height="wrap_content"
                         android:text="PERIGOSO"
                         android:textColor="@color/white"
-                        android:textSize="32sp"
+                        android:textSize="30sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -142,25 +139,29 @@
                 android:useDefaultMargins="true"
                 android:layout_marginBottom="24dp">
 
+                <!-- Card Roubos/Furtos -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/Widget.Material3.CardView.Filled"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     app:cardCornerRadius="8dp"
-                    app:cardElevation="2dp">
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:strokeColor="#9F2220"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="16dp"
+                        android:gravity="center_horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Roubos/Furtos"
-                            android:textColor="@android:color/darker_gray"
+                            android:textColor="@android:color/black"
                             android:textSize="14sp" />
 
                         <TextView
@@ -174,25 +175,29 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Card Vandalismo -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/Widget.Material3.CardView.Filled"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     app:cardCornerRadius="8dp"
-                    app:cardElevation="2dp">
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:strokeColor="#9F2220"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="16dp"
+                        android:gravity="center_horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Vandalismo"
-                            android:textColor="@android:color/darker_gray"
+                            android:textColor="@android:color/black"
                             android:textSize="14sp" />
 
                         <TextView
@@ -206,25 +211,29 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Card Assédio -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/Widget.Material3.CardView.Filled"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     app:cardCornerRadius="8dp"
-                    app:cardElevation="2dp">
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:strokeColor="#9F2220"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="16dp"
+                        android:gravity="center_horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Assédio"
-                            android:textColor="@android:color/darker_gray"
+                            android:textColor="@android:color/black"
                             android:textSize="14sp" />
 
                         <TextView
@@ -238,25 +247,29 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Card Atividade Suspeita -->
                 <com.google.android.material.card.MaterialCardView
-                    style="@style/Widget.Material3.CardView.Filled"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     app:cardCornerRadius="8dp"
-                    app:cardElevation="2dp">
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:strokeColor="#9F2220"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="16dp"
+                        android:gravity="center_horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Atividade suspeita"
-                            android:textColor="@android:color/darker_gray"
+                            android:textColor="@android:color/black"
                             android:textSize="14sp" />
 
                         <TextView

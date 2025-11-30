@@ -34,34 +34,41 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/black">
+                android:background="@color/guardway_red"
+
+                app:theme="@style/Toolbar.WhiteIcons">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:id="@+id/toolbar_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="GUARDWAY."
                         android:textColor="@color/white"
                         android:textSize="24sp"
                         android:textStyle="bold"
-                        android:layout_centerInParent="true"
-                        tools:ignore="HardcodedText" />
+
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentStart="true"
+
+                        android:layout_marginStart="86dp"/>
 
                     <ImageButton
                         android:id="@+id/btn_user_profile"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:paddingEnd="16dp"
+
+                        android:layout_marginEnd="16dp"
+
                         android:background="@android:color/transparent"
                         android:src="@drawable/ic_menu_login"
                         android:contentDescription="Perfil do Usuário"
-                        app:tint="@color/white" />
+                        app:tint="@color/white"
+                        android:scaleType="fitCenter" />
 
                 </RelativeLayout>
 
@@ -102,7 +109,7 @@
                 android:id="@+id/btn_perigo_status"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:backgroundTint="@color/black"
+                android:backgroundTint="@color/guardway_red"
                 android:text="Carregando...\nAguarde."
                 android:textColor="@color/white"
                 android:textSize="16sp"
@@ -116,7 +123,7 @@
                 android:id="@+id/btn_emergency_call"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:backgroundTint="@color/black"
+                android:backgroundTint="@color/guardway_red"
                 android:text="CHAMADA DE EMERGÊNCIA"
                 android:textColor="@color/white"
                 android:textSize="16sp"
@@ -137,7 +144,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_visitante"
-        app:menu="@menu/activity_main_visitante_drawer" />
+        app:headerLayout="@layout/nav_header_usuario"
+        app:menu="@menu/activity_usuario_drawer"
+        />
 
 </androidx.drawerlayout.widget.DrawerLayout>
