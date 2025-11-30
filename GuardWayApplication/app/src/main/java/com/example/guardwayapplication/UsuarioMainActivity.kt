@@ -2,7 +2,6 @@ package com.example.guardwayapplication
 
 import ApiService
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
@@ -40,7 +39,7 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.location.Priority
 import com.google.android.material.navigation.NavigationView
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place // Classe Place do Google Places
+import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.gms.common.api.Status
@@ -58,7 +57,7 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         private const val PERMISSION_REQUEST_CODE = 100
         private const val DEFAULT_ZOOM = 15f
         private const val LOCATION_PRIORITY = Priority.PRIORITY_HIGH_ACCURACY
-        private const val BASE_URL = "http://192.168.1.4/"
+        private const val BASE_URL = "http://192.168.1.4/" // Substitua pelo seu IP real
 
         private const val DANGER_THRESHOLD = 5
         private const val DEFAULT_LATITUDE = -23.5505 // São Paulo
@@ -66,16 +65,27 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         private const val DEFAULT_ADDRESS = "Localização Indisponível (São Paulo, SP)"
         // ⚠️ ATENÇÃO: Use a sua chave de API do Google Maps/Places
         private const val PLACES_API_KEY = "AIzaSyCuUyAV8yqeNBatJcxGUv-nJKC7OChYZLM"
+
+        // Constantes para nomes de marcadores
+        private const val MARKER_USER_LOCATION = "Sua Localização"
+        private const val MARKER_SEARCHED_PLACE = "Local Pesquisado"
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var googleMap: GoogleMap? = null
+
+    // Variáveis para rastrear a origem da centralização do mapa
+    private var isSearching: Boolean = false
+
 
     // --- Componentes do Drawer e Toolbar ---
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toolbar: Toolbar
     private lateinit var navView: NavigationView
     private lateinit var btnUserProfile: ImageButton
+
+    // --- Componente NOVO ---
+    private lateinit var btnRecenterGps: ImageButton // Botão de recentragem GPS
 
     // --- SharedPreferences ---
     private lateinit var prefsManager: SharedPreferencesManager
@@ -85,11 +95,10 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var tvAddressTitle: TextView
     private lateinit var btnPerigoStatus: MaterialButton
-    private lateinit var btnEmergencyCall: MaterialButton
     private lateinit var btnVerRelatorioCompleto: MaterialButton
     private lateinit var btnCadastrarOcorrencia: MaterialButton
 
-    // --- Referências para o Autocomplete (NOVO) ---
+    // --- Referências para o Autocomplete ---
     private lateinit var autocompleteFragment: AutocompleteSupportFragment
     // ------------------------------------------------
 
@@ -100,7 +109,6 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
     private var currentCEP: String? = null
     private var currentFullAddress: String? = null
 
-    // CORREÇÃO 1: Tipo da lista mudado de Place para LocalPlace
     private var places = mutableListOf<LocalPlace>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,8 +144,22 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         setupDrawerHeader()
         // ------------------------------------------
 
-        // Configura o Places Autocomplete (NOVO)
+        // Configura o Places Autocomplete
         setupPlacesAutocomplete()
+
+        // Listener do NOVO Botão: Recentralizar no GPS
+        btnRecenterGps.setOnClickListener {
+            Toast.makeText(this, "Centralizando no GPS...", Toast.LENGTH_SHORT).show()
+            isSearching = false // Garante que a centralização vá para o GPS
+            getCurrentLocation() // Pede a localização atualizada e move a câmera
+
+            // Limpa o campo de busca
+            autocompleteFragment.setText("")
+
+            // ESCONDE O BOTÃO: Voltamos à localização do usuário (GPS)
+            btnRecenterGps.visibility = View.GONE
+        }
+
 
         // --- Aplicando Insets ---
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -168,15 +190,6 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         bottomSheet.visibility = View.VISIBLE
 
 
-        // Listener do botão de emergência
-        btnEmergencyCall.setOnClickListener {
-            Toast.makeText(this, "Abrindo discador de emergência (190)...", Toast.LENGTH_SHORT)
-                .show()
-            val numeroEmergencia = "tel:190"
-            val intent = Intent(Intent.ACTION_DIAL, Uri.parse(numeroEmergencia))
-            startActivity(intent)
-        }
-
         // Listener do botão Cadastrar Ocorrência
         btnCadastrarOcorrencia.setOnClickListener {
             val intent = Intent(this@UsuarioMainActivity, OccurrenceFormActivity::class.java)
@@ -206,6 +219,9 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         // Estado Inicial: "Avaliando..."
         tvAddressTitle.text = "Aguardando localização..."
         setPerigoStatusLoading(true)
+
+        // Garante que o botão de recentragem esteja invisível no início (estamos no GPS)
+        btnRecenterGps.visibility = View.GONE
     }
 
     /**
@@ -229,11 +245,13 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         btnUserProfile = findViewById(R.id.btn_user_profile)
         navView = findViewById(R.id.nav_view)
 
+        // NOVO Botão
+        btnRecenterGps = findViewById(R.id.btn_recenter_gps)
+
         // Bottom Sheet
         bottomSheet = findViewById(R.id.bottom_sheet)
         tvAddressTitle = findViewById(R.id.tv_address_title)
         btnPerigoStatus = findViewById(R.id.btn_perigo_status)
-        btnEmergencyCall = findViewById(R.id.btn_emergency_call)
         btnCadastrarOcorrencia = findViewById(R.id.btn_cadastrar_ocorrencia)
         btnVerRelatorioCompleto = findViewById(R.id.btn_ver_relatorio_completo)
     }
@@ -252,7 +270,6 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
             .findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
 
         // 3. Define os campos de dados que você quer receber
-        // NOTE: Usa a classe Place.Field da biblioteca Google Places (Importada no topo)
         autocompleteFragment.setPlaceFields(
             listOf(
                 Place.Field.ID,
@@ -270,14 +287,30 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
 
                 val latLng = place.latLng ?: return onError("Coordenadas inválidas para o endereço.")
 
-                // Extrai o CEP
+                // ATENÇÃO: Ativa a flag de pesquisa
+                isSearching = true
+
+                // MOSTRA O BOTÃO: Foi feita uma pesquisa e o usuário pode querer voltar ao GPS
+                btnRecenterGps.visibility = View.VISIBLE
+
+                // 1. ADICIONA O MARCADOR DO LOCAL PESQUISADO À LISTA
+                places.removeAll { it.name == MARKER_SEARCHED_PLACE } // Remove o marcador anterior
+                val searchedPlace = LocalPlace(
+                    name = MARKER_SEARCHED_PLACE,
+                    latLng = latLng,
+                    address = place.address ?: place.name ?: "Local Desconhecido",
+                    rating = 0f
+                )
+                places.add(searchedPlace)
+
+                // Atualiza o mapa: move a câmera para a localização pesquisada
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM))
+
+                // Extrai CEP e Endereço
                 val cep = place.addressComponents?.asList()
                     ?.find { it.types.contains("postal_code") }?.name ?: ""
 
                 val address = place.address ?: place.name ?: "Endereço Desconhecido"
-
-                // Atualiza o mapa: move a câmera para a localização pesquisada
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM))
 
                 // Atualiza as variáveis globais
                 currentLatitude = latLng.latitude
@@ -288,11 +321,14 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
                 // Atualiza o Bottom Sheet
                 onAddressFound(currentFullAddress!!)
 
-                // Recarrega as ocorrências para o novo local
+                // Recarrega as ocorrências e o mapa
                 if (currentCEP != null && currentCEP!!.isNotEmpty()) {
                     getOcorrenciasByCep(currentCEP!!)
                 } else {
-                    getOcorrenciasByCep("00000-000") // Fallback de CEP
+                    // Mantém apenas o marcador do local de pesquisa e do usuário (se houver)
+                    places.removeAll { it.name != MARKER_USER_LOCATION && it.name != MARKER_SEARCHED_PLACE }
+                    getUserLocation()
+                    onOccurrenceDataReceived(ApiService.OcorrenciaCepResponse("Seguro", 0, currentFullAddress))
                 }
 
                 Toast.makeText(this@UsuarioMainActivity, "Localização de pesquisa carregada.", Toast.LENGTH_SHORT).show()
@@ -363,7 +399,7 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
             }
 
             R.id.nav_chamar_emergencia -> {
-                btnEmergencyCall.performClick()
+                performEmergencyCall() // Chama o método de chamada
             }
 
             R.id.nav_sobre_nos -> {
@@ -378,6 +414,15 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         }
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    // MÉTODO: Centraliza a lógica de chamada de emergência
+    private fun performEmergencyCall() {
+        Toast.makeText(this, "Abrindo discador de emergência (190)...", Toast.LENGTH_SHORT)
+            .show()
+        val numeroEmergencia = "tel:190"
+        val intent = Intent(Intent.ACTION_DIAL, Uri.parse(numeroEmergencia))
+        startActivity(intent)
     }
 
     private fun navigateToRelatorioSeguranca() {
@@ -425,6 +470,10 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
+
+        // 🚨 CONFIGURAÇÃO DE MAPA: Garante que o mapa tenha todos os detalhes geográficos
+        this.googleMap?.mapType = GoogleMap.MAP_TYPE_NORMAL
+
         getUserLocation()
     }
 
@@ -435,6 +484,7 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         map.clear()
 
         var userLatLng: LatLng? = null
+        var searchLatLng: LatLng? = null
 
         // 2. Tenta habilitar a camada 'My Location' (ponto azul)
         if (ActivityCompat.checkSelfPermission(
@@ -445,17 +495,30 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
             map.isMyLocationEnabled = true
         }
 
-        // 3. Adiciona todos os locais à lista de places (incluindo a localização do usuário)
+        // 3. Adiciona todos os locais à lista de places
         places.forEach { place ->
-            if (place.name == "Sua Localização") {
+            if (place.name == MARKER_USER_LOCATION) {
                 userLatLng = place.latLng
+                // Não adiciona marcador para o usuário (ponto azul já o faz)
+            } else if (place.name == MARKER_SEARCHED_PLACE) {
+                searchLatLng = place.latLng
+                // Adiciona o marcador do local pesquisado
+                map.addMarker(MarkerOptions().title("Local Pesquisado").position(place.latLng))
             } else {
                 // Adiciona ocorrências (ou outros lugares) no mapa
                 map.addMarker(MarkerOptions().title(place.name).position(place.latLng))
             }
         }
 
-        // 4. Move a câmera para a localização do usuário (ou padrão)
+        // 4. Move a câmera: Se estiver em modo de pesquisa, a câmera já foi movida.
+        if (isSearching) {
+            // Apenas desativa a flag para que toques futuros ou eventos que chamem
+            // getUserLocation() sem isSearching priorizem o GPS.
+            isSearching = false
+            return
+        }
+
+        // Se não foi pesquisa, centraliza no GPS ou no default
         val targetLatLng = userLatLng ?: LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
 
         if (userLatLng != null) {
@@ -525,17 +588,21 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
 
                     performReverseGeocoding(currentLatitude!!, currentLongitude!!)
 
-                    places.removeAll { it.name == "Sua Localização" }
-                    // CORREÇÃO 2: Criação da instância LocalPlace
+                    // Limpa o marcador de pesquisa, priorizando a localização GPS
+                    places.removeAll { it.name == MARKER_USER_LOCATION || it.name == MARKER_SEARCHED_PLACE }
+
                     val userPlace = LocalPlace(
-                        name = "Sua Localização",
+                        name = MARKER_USER_LOCATION,
                         latLng = userLatLng,
                         address = "Você está aqui!",
                         rating = 5.0f
                     )
                     places.add(userPlace)
-                    getUserLocation()
 
+                    // Move a câmera para a localização GPS
+                    googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, DEFAULT_ZOOM))
+
+                    getUserLocation() // Atualiza os marcadores
                 } else {
                     getLastKnownLocationFallback()
                 }
@@ -564,17 +631,20 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
                     currentLongitude = location.longitude
                     performReverseGeocoding(currentLatitude!!, currentLongitude!!)
 
-                    places.removeAll { it.name == "Sua Localização" }
-                    // CORREÇÃO 3: Criação da instância LocalPlace
+                    places.removeAll { it.name == MARKER_USER_LOCATION || it.name == MARKER_SEARCHED_PLACE }
+
                     val userPlace = LocalPlace(
-                        name = "Sua Localização",
+                        name = MARKER_USER_LOCATION,
                         latLng = userLatLng,
                         address = "Você está aqui!",
                         rating = 5.0f
                     )
                     places.add(userPlace)
-                    getUserLocation()
 
+                    // Move a câmera para a localização GPS
+                    googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, DEFAULT_ZOOM))
+
+                    getUserLocation() // Atualiza os marcadores
                 } else {
                     onError("Não foi possível obter a localização atual ou de fallback.")
                     currentFullAddress = DEFAULT_ADDRESS
@@ -652,12 +722,12 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
                         val ocorrencias = response.body()!!
                         val count = ocorrencias.size
 
-                        places.removeAll { it.name != "Sua Localização" }
+                        // Mantém apenas o local do usuário (GPS) e o local pesquisado, removendo ocorrências antigas
+                        places.removeAll { it.name != MARKER_USER_LOCATION && it.name != MARKER_SEARCHED_PLACE }
 
                         ocorrencias.forEach { item ->
                             try {
                                 val latLng = LatLng(item.latitude, item.longitude)
-                                // CORREÇÃO 4: Criação da instância LocalPlace
                                 val markerPlace = LocalPlace(
                                     name = "${item.tipo_ocorrencia} (#${item.id_ocorrencia})",
                                     latLng = latLng,
@@ -670,6 +740,7 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
                             }
                         }
 
+                        // Atualiza os marcadores.
                         getUserLocation()
 
                         val statusText = if (count > DANGER_THRESHOLD) "PERIGOSO" else "SEGURO"
@@ -760,7 +831,6 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
-    // A classe customizada foi renomeada para LocalPlace para evitar conflito com a Place do Google Places
     data class LocalPlace(
         val name: String,
         val latLng: LatLng,
