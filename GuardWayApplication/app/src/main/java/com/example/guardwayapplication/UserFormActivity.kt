@@ -8,7 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.view.ViewGroup
-import android.widget.ImageView // Importe ImageView
+import android.widget.ImageView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,10 +24,9 @@ class UserFormActivity : AppCompatActivity() {
     private lateinit var txtSenha: EditText
     private lateinit var btnSalvar: Button
 
-    private lateinit var btnVoltar: Button
+    // private lateinit var btnVoltar: Button <--- REMOVIDA
     private lateinit var textFormTitle: TextView
 
-    // VARIÁVEL ADICIONADA PARA O BOTÃO VOLTAR NA TOOLBAR
     private lateinit var btnBackToolbar: ImageView
 
     private var isEditing: Boolean = false
@@ -44,10 +43,10 @@ class UserFormActivity : AppCompatActivity() {
         txtCpf = findViewById(R.id.txtCpf)
         txtSenha = findViewById(R.id.txtSenha)
         btnSalvar = findViewById(R.id.btnSalvar)
-        btnVoltar = findViewById(R.id.btnVoltar)
+        // btnVoltar = findViewById(R.id.btnVoltar) <--- REMOVIDA
 
-        // INICIALIZAÇÃO E LISTENER DO BOTÃO VOLTAR DA TOOLBAR
-        btnBackToolbar = findViewById(R.id.btn_back_toolbar) // ID definido no XML
+        // INICIALIZAÇÃO E LISTENER DO BOTÃO VOLTAR DA TOOLBAR (MANTIDO)
+        btnBackToolbar = findViewById(R.id.btn_back_toolbar)
         btnBackToolbar.setOnClickListener {
             finish() // Retorna à Activity anterior
         }
@@ -61,7 +60,7 @@ class UserFormActivity : AppCompatActivity() {
 
         setupIntentData()
 
-        btnVoltar.setOnClickListener { finish() }
+        // btnVoltar.setOnClickListener { finish() } <--- REMOVIDA
 
         btnSalvar.setOnClickListener {
             saveUser()
@@ -74,19 +73,18 @@ class UserFormActivity : AppCompatActivity() {
 
         if (usuarioParaEditar != null) {
             isEditing = true
-            userId = usuarioParaEditar.USUARIO_ID // Pega o ID do objeto
+            userId = usuarioParaEditar.USUARIO_ID
 
             // 1. Configura a UI para Edição
             textFormTitle.text = "Editar Conta"
             btnSalvar.text = "Atualizar"
-            btnVoltar.text = "Voltar"
+            // btnVoltar.text = "Voltar" <--- REMOVIDA
 
             // 2. Preenche os campos com os dados do objeto Usuario
             txtNome.setText(usuarioParaEditar.USUARIO_NOME)
             txtEmail.setText(usuarioParaEditar.USUARIO_EMAIL)
             txtCpf.setText(usuarioParaEditar.USUARIO_CPF)
 
-            // **NUNCA** preencha o campo de senha com o valor real por segurança.
             txtSenha.setText("")
 
         } else {
@@ -94,7 +92,7 @@ class UserFormActivity : AppCompatActivity() {
             isEditing = false
             textFormTitle.text = "Novo Usuário"
             btnSalvar.text = "Salvar"
-            userId = null // Garante que o ID é nulo para criação
+            userId = null
         }
     }
 
@@ -109,7 +107,6 @@ class UserFormActivity : AppCompatActivity() {
             return
         }
 
-        // Cria o objeto de dados a ser enviado
         val userPayload = Usuario(
             USUARIO_ID = userId ?: 0,
             USUARIO_NOME = nome,
@@ -118,14 +115,12 @@ class UserFormActivity : AppCompatActivity() {
             USUARIO_SENHA = senha,
         )
 
-        // Escolhe a chamada de API correta
         val call: Call<ApiService.SuccessResponse> = if (isEditing) {
             apiService.updateUsuario(userPayload)
         } else {
             apiService.createUsuario(userPayload)
         }
 
-        // Executa a chamada
         call.enqueue(object : Callback<ApiService.SuccessResponse> {
             override fun onResponse(call: Call<ApiService.SuccessResponse>, response: Response<ApiService.SuccessResponse>) {
                 val message = response.body()?.message ?: "Operação concluída."
@@ -133,9 +128,8 @@ class UserFormActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body()?.success == true) {
                     Toast.makeText(this@UserFormActivity, message, Toast.LENGTH_SHORT).show()
 
-                    // Sinaliza para a Activity anterior (UserListActivity) recarregar a lista
                     setResult(RESULT_OK)
-                    finish() // Fecha o formulário
+                    finish()
                 } else {
                     Toast.makeText(this@UserFormActivity, "Falha: ${response.code()}. $message", Toast.LENGTH_LONG).show()
                 }

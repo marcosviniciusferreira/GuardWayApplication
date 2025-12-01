@@ -8,16 +8,30 @@
     android:background="@color/white"
     tools:context=".LoginActivity">
 
-    <!-- Toolbar (Seta de voltar) -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_login"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/transparent"
-        android:elevation="0dp"
+        android:background="@color/white"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:titleTextColor="@color/black" />
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/btn_back_toolbar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/guardway_red"
+                android:contentDescription="Voltar"/>
+
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <!-- Título LOGIN (Agora em Vermelho) -->
     <TextView

@@ -100,10 +100,6 @@ class PerfilActivity : AppCompatActivity() {
         val btnAjudaSuporte = findViewById<CardView>(R.id.btn_ajuda_suporte)
         btnAjudaSuporte.findViewById<TextView>(R.id.tv_item_title).text = "Ajuda e Suporte"
 
-        // 5. Termos de uso
-        val btnTermosUso = findViewById<CardView>(R.id.btn_termos_uso)
-        btnTermosUso.findViewById<TextView>(R.id.tv_item_title).text = "Termos de uso"
-
         // --- Listener para o botão Sair ---
         val btnLogout = findViewById<MaterialButton>(R.id.btn_logout)
         btnLogout.setOnClickListener {

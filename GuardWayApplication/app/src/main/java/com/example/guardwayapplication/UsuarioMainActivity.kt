@@ -404,12 +404,14 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
             }
 
             R.id.nav_sobre_nos -> {
-                // TODO: Implementar SobreNosActivity
+                val intent = Intent(this, SobreNosActivity::class.java)
+                startActivity(intent)
                 Toast.makeText(this, "Abrindo Sobre Nós...", Toast.LENGTH_SHORT).show()
             }
 
             R.id.nav_ajuda -> {
-                // TODO: Implementar CentralAjudaActivity
+                val intent = Intent(this, CentralAjudaActivity::class.java)
+                startActivity(intent)
                 Toast.makeText(this, "Abrindo Central de Ajuda...", Toast.LENGTH_SHORT).show()
             }
         }

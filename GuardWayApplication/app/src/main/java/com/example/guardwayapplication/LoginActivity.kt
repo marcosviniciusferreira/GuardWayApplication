@@ -5,11 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView // Adicionado para o botão de voltar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar // Import necessário
-import com.google.android.material.button.MaterialButton // Import necessário
+import androidx.appcompat.widget.Toolbar // Import correto para Toolbar
+import com.google.android.material.button.MaterialButton
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,8 +29,9 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var prefsManager: SharedPreferencesManager
-    private lateinit var toolbarLogin: Toolbar // Variável para a nova Toolbar
-    private lateinit var createAccountButton: MaterialButton // Variável para o novo botão
+    private lateinit var toolbarLogin: Toolbar // CORRIGIDO: Deve ser Toolbar, não ImageView
+    private lateinit var btnBack: ImageView // NOVO: Referência ao ícone de voltar
+    private lateinit var createAccountButton: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,35 +40,35 @@ class LoginActivity : AppCompatActivity() {
         // Inicializa o gerenciador de SharedPreferences
         prefsManager = SharedPreferencesManager(this)
 
-        // 1. Inicializa a Toolbar e configura o botão de Voltar
-        toolbarLogin = findViewById(R.id.toolbar_login)
-        setSupportActionBar(toolbarLogin) // Necessário para usar app:navigationIcon
+        // 1. Inicializa a Toolbar
+        toolbarLogin = findViewById(R.id.toolbar_login) // CORRIGIDO: Usando o ID da Toolbar
+        setSupportActionBar(toolbarLogin) // Configura a Toolbar como ActionBar
 
-        // Listener para o ícone de voltar
-        toolbarLogin.setNavigationOnClickListener {
-            // Navega para a Activity VisitanteMainActivity
-            val intent = Intent(this@LoginActivity, VisitanteMainActivity::class.java)
-            startActivity(intent)
-            finish() // Fecha a tela de Login para não ficar na pilha
+        // Desativa a exibição do título padrão da ActionBar
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        // 2. Inicializa e configura o botão de Voltar (ImageView)
+        btnBack = findViewById(R.id.btn_back_toolbar)
+
+        // Listener para o ícone de voltar (ImageView)
+        btnBack.setOnClickListener {
+            // Chama a função padrão de volta do Android.
+            onBackPressed()
         }
 
-        // 2. Inicializa os campos e botões
+        // Seus Listeners anteriores estavam duplicados ou incorretos, foram removidos/corrigidos.
+
+        // 3. Inicializa os campos e botões
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
         val loginButton: Button = findViewById(R.id.loginButton)
         createAccountButton = findViewById(R.id.createAccountButton)
         val forgotPasswordTextView: TextView = findViewById(R.id.tv_forgot_password)
 
-        // Define a Toolbar customizada como a ActionBar principal
-        setSupportActionBar(toolbarLogin)
-
-        // 🌟 ESTA LINHA É CRÍTICA: Desativa a exibição do título padrão
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-
         // Garante que o título interno da Toolbar esteja nulo (redundante, mas seguro)
         toolbarLogin.title = null
 
-        // 3. Listeners de clique
+        // 4. Listeners de clique
         loginButton.setOnClickListener {
             performLogin()
         }
@@ -82,6 +84,15 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // Sobrescreve a função de volta para definir a navegação padrão (opcional)
+    override fun onBackPressed() {
+        super.onBackPressed()
+        // Navega para a Activity VisitanteMainActivity
+        val intent = Intent(this@LoginActivity, VisitanteMainActivity::class.java)
+        startActivity(intent)
+        finish() // Fecha a tela de Login
+    }
+
     private fun performLogin() {
         val email = emailEditText.text.toString().trim()
         val password = passwordEditText.text.toString().trim()
@@ -91,7 +102,6 @@ class LoginActivity : AppCompatActivity() {
                 .show()
             return
         }
-
 
         val retrofit = Retrofit.Builder()
             .baseUrl("http://192.168.1.4/")
@@ -116,7 +126,6 @@ class LoginActivity : AppCompatActivity() {
                         val userData = loginResponses.first()
 
                         // 🌟 SALVA TODOS OS DADOS DO USUÁRIO NO SHARED PREFERENCES
-                        // O método saveUserData DEVE usar a chave "USER_ID" para o ID
                         prefsManager.saveUserData(
                             id = userData.usuarioId,
                             nome = userData.usuarioNome,

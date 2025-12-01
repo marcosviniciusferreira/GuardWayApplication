@@ -144,8 +144,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_usuario"
-        app:menu="@menu/activity_usuario_drawer"
+        app:headerLayout="@layout/nav_header_visitante"
+        app:menu="@menu/activity_main_visitante_drawer"
         />
 
 </androidx.drawerlayout.widget.DrawerLayout>

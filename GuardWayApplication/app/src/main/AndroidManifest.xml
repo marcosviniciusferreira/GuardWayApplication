@@ -41,6 +41,14 @@
             android:exported="false" />
 
         <activity
+            android:name=".SobreNosActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".CentralAjudaActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".RelatorioSegurancaActivity"
             android:exported="false" />
 
