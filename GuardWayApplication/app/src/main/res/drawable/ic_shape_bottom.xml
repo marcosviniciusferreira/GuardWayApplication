@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Linhas Vermelhas (#B91C1C) -->
+    <path
+        android:strokeColor="#B91C1C"
+        android:strokeWidth="1.5"
+        android:fillColor="#00000000"
+        android:pathData="M60,200
+                          L60,40
+                          L-10,40
+
+                          M1, 300
+                          L100,090
+                          L0,65" />
+</vector>
