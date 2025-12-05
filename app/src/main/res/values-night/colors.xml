@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="cor_fundo_tela">#131314</color>
+    <color name="titulo">#FFFFFF</color>
+    <color name="cor_texto_padrao">#FFFFFF</color>
+    <color name="cor_cartao">#1E1F20</color>
+    <color name="guardway_red">#B91C1C</color>
+</resources>

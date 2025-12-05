@@ -5,14 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/cor_fundo_tela"
     tools:context=".RelatorioSegurancaActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#9F2220"
+        android:background="@color/guardway_red"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -25,9 +25,7 @@
             android:contentDescription="Voltar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-
-            app:layout_constraintStart_toStartOf="parent"
-            />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -55,14 +53,13 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="Relatório de Segurança"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="@color/cor_texto_padrao"
                 android:textSize="25sp"
                 android:textStyle="bold"
                 android:layout_gravity="center_horizontal" />
@@ -73,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:textColor="@color/black"
+                android:textColor="@color/cor_texto_padrao"
                 android:layout_gravity="center_horizontal"
                 tools:text="Av. Atlântica, 2300" />
 
@@ -83,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:textStyle="normal"
                 android:textSize="14sp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/cor_texto_padrao"
                 android:layout_marginBottom="16dp"
                 android:layout_gravity="center_horizontal"
                 tools:text="São Paulo, SP" />
@@ -126,7 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Estatísticas (Últimos 30 dias)"
-                android:textColor="@color/black"
+                android:textColor="@color/cor_texto_padrao"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp" />
@@ -139,15 +136,14 @@
                 android:useDefaultMargins="true"
                 android:layout_marginBottom="24dp">
 
-                <!-- Card Roubos/Furtos -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:strokeColor="#9F2220"
+                    app:cardBackgroundColor="@color/cor_cartao"
+                    app:strokeColor="@color/guardway_red"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
@@ -161,29 +157,28 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Roubos/Furtos"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/cor_texto_padrao"
                             android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/tv_roubo_furto"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="#9F2220"
+                            android:textColor="@color/guardway_red"
                             android:textSize="30sp"
                             android:textStyle="bold"
                             tools:text="10" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Card Vandalismo -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:strokeColor="#9F2220"
+                    app:cardBackgroundColor="@color/cor_cartao"
+                    app:strokeColor="@color/guardway_red"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
@@ -197,29 +192,28 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Vandalismo"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/cor_texto_padrao"
                             android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/tv_vandalismo"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="#9F2220"
+                            android:textColor="@color/guardway_red"
                             android:textSize="30sp"
                             android:textStyle="bold"
                             tools:text="20" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Card Assédio -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:strokeColor="#9F2220"
+                    app:cardBackgroundColor="@color/cor_cartao"
+                    app:strokeColor="@color/guardway_red"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
@@ -233,29 +227,28 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Assédio"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/cor_texto_padrao"
                             android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/tv_assedio"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="#9F2220"
+                            android:textColor="@color/guardway_red"
                             android:textSize="30sp"
                             android:textStyle="bold"
                             tools:text="34" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Card Atividade Suspeita -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:strokeColor="#9F2220"
+                    app:cardBackgroundColor="@color/cor_cartao"
+                    app:strokeColor="@color/guardway_red"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
@@ -269,14 +262,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Atividade suspeita"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/cor_texto_padrao"
                             android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/tv_atividade_suspeita"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="#9F2220"
+                            android:textColor="@color/guardway_red"
                             android:textSize="30sp"
                             android:textStyle="bold"
                             tools:text="39"/>
@@ -290,7 +283,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ocorrências Recentes (Comunidade)"
-                android:textColor="@color/black"
+                android:textColor="@color/cor_texto_padrao"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp" />

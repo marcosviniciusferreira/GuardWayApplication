@@ -5,14 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/cor_fundo_tela"
     tools:context=".LoginActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_login"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
+        android:background="@color/cor_fundo_tela"
         app:layout_constraintTop_toTopOf="parent"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
@@ -33,14 +33,13 @@
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- Título LOGIN (Agora em Vermelho) -->
     <TextView
         android:id="@+id/tv_login_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Login"
-        android:textColor="@color/guardway_red"
+        android:textColor="@color/titulo"
         android:textSize="32sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -48,21 +47,19 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar_login"
         tools:ignore="HardcodedText" />
 
-    <!-- Subtítulo -->
     <TextView
         android:id="@+id/tv_welcome_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Bem vindo de volta!"
-        android:textColor="@color/black"
+        android:textColor="@color/cor_texto_padrao"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_login_title"
         tools:ignore="HardcodedText" />
 
-    <!-- Campo EMAIL -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_email"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -84,7 +81,6 @@
             android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Campo SENHA -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_password"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -107,7 +103,6 @@
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Esqueceu a senha -->
     <TextView
         android:id="@+id/tv_forgot_password"
         android:layout_width="wrap_content"
@@ -115,13 +110,12 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
         android:text="Esqueceu sua senha?"
-        android:textColor="@color/black"
+        android:textColor="@color/cor_texto_padrao"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/til_password"
         tools:ignore="HardcodedText" />
 
-    <!-- Botão LOGIN (Sólido Vermelho) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/loginButton"
         android:layout_width="0dp"
@@ -139,7 +133,6 @@
         app:layout_constraintTop_toBottomOf="@id/tv_forgot_password"
         tools:ignore="HardcodedText" />
 
-    <!-- Botão CRIAR CONTA (Borda Vermelha) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/createAccountButton"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -148,7 +141,7 @@
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="16dp"
         android:text="Criar nova conta"
-        android:textColor="@color/guardway_red"
+        android:textColor="@color/cor_texto_padrao"
         app:cornerRadius="8dp"
         app:strokeColor="@color/guardway_red"
         app:strokeWidth="2dp"

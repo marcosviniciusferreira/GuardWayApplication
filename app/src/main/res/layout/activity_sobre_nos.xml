@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/cor_fundo_tela"
     tools:context=".SobreNosActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -63,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sobre o App"
-                android:textColor="@color/black"
+                android:textColor="@color/cor_texto_padrao"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent"
@@ -89,6 +89,7 @@
                 android:layout_marginTop="32dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/cor_cartao"
                 app:layout_constraintTop_toBottomOf="@id/img_logo">
 
                 <LinearLayout
@@ -113,7 +114,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Oferecer inteligência de segurança para quem movimenta a cidade. O GuardWay protege o patrimônio e a vida dos entregadores através de dados colaborativos."
-                        android:textColor="@color/black"
+                        android:textColor="@color/cor_texto_padrao"
                         android:textSize="16sp"
                         android:gravity="center_horizontal"/>
                 </LinearLayout>
@@ -146,7 +147,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Gabriel Silva Oliveira"
-                    android:textColor="@color/black"
+                    android:textColor="@color/cor_texto_padrao"
                     android:textSize="16sp"/>
             </LinearLayout>
 
@@ -163,7 +164,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Marcos Vinicius Ferreira Paim"
-                    android:textColor="@color/black"
+                    android:textColor="@color/cor_texto_padrao"
                     android:textSize="16sp"/>
             </LinearLayout>
 

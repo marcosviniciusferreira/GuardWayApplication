@@ -1,6 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="guardway_red">#B91C1C</color>
+
+    <color name="titulo">#B91C1C</color>
+    <color name="cor_fundo_tela">#FFFFFF</color>
+    <color name="cor_texto_padrao">#FF000000</color>
+    <color name="cor_cartao">#F5F5F5</color>
 </resources>
