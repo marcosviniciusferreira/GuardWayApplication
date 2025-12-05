@@ -35,6 +35,9 @@ interface ApiService {
     @GET("/apis/get_ocorrencias.php")
     fun getOcorrencias(): Call<List<Ocorrencia>>
 
+    @GET("/apis/get_ocorrencias_by_user.php")
+    fun getOcorrenciasByUserId(@Query("id") userId: Int): Call<List<Ocorrencia>>
+
     @GET("apis/get_ocorrencias_cep.php")
     fun getOcorrenciasPorCep(@Query("cep") cep: String): Call<List<OcorrenciaItem>>
 
