@@ -10,7 +10,10 @@
     app:cardCornerRadius="8dp"
     app:cardElevation="2dp"
 
-    app:strokeColor="@color/guardway_red"       app:strokeWidth="1dp"                       app:cardBackgroundColor="@color/white"       android:clickable="true"
+    app:strokeColor="@color/guardway_red"
+    app:strokeWidth="1dp"
+    app:cardBackgroundColor="@color/cor_cartao"
+    android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground">
 
@@ -20,8 +23,7 @@
         android:paddingStart="16dp"
         android:paddingTop="8dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
-        android:background="@color/white"        >
+        android:paddingBottom="8dp">
 
         <LinearLayout
             android:id="@+id/layout_botoes"
@@ -69,7 +71,7 @@
                 android:id="@+id/tv_dia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/guardway_red"
+                android:textColor="@color/cor_texto_padrao"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 tools:text="17" />
@@ -78,7 +80,7 @@
                 android:id="@+id/tv_mes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/guardway_red"
+                android:textColor="@color/cor_texto_padrao"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 tools:text="SET" />
@@ -91,7 +93,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="Tipo de Ocorrencia"
-            android:textColor="@color/black"
+            android:textColor="@color/cor_texto_padrao"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/layout_data"
@@ -106,7 +108,8 @@
             android:layout_marginTop="2dp"
             android:layout_marginEnd="8dp"
             android:text="Rua Exemplo, 123, Centro"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/cor_texto_padrao"
+            android:alpha="0.7"
             android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@+id/layout_data"
             app:layout_constraintHorizontal_bias="0.0"
@@ -135,7 +138,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="6dp"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@color/cor_texto_padrao"
+                android:alpha="0.5"
                 android:textSize="12sp"
                 android:text="|" />
 
@@ -144,7 +148,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@color/cor_texto_padrao"
+                android:alpha="0.7"
                 tools:text="2023-10-27 15:30" />
         </LinearLayout>
 

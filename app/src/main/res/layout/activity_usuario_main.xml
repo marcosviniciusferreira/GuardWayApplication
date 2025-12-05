@@ -35,11 +35,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/guardway_red"
-
                 app:contentInsetStart="0dp"
                 app:contentInsetStartWithNavigation="0dp"
-                app:theme="@style/Toolbar.WhiteIcons"
-                >
+                app:theme="@style/Toolbar.WhiteIcons">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -52,10 +50,8 @@
                         android:textColor="@color/white"
                         android:textSize="24sp"
                         android:textStyle="bold"
-
                         android:layout_centerVertical="true"
                         android:layout_alignParentStart="true"
-
                         android:layout_marginStart="86dp"/>
 
                     <ImageButton
@@ -64,17 +60,13 @@
                         android:layout_height="32dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-
                         android:layout_marginEnd="16dp"
-
                         android:background="@android:color/transparent"
                         android:src="@drawable/ic_menu_login"
                         android:contentDescription="Perfil do Usuário"
                         app:tint="@color/white"
                         android:scaleType="fitCenter" />
-
                 </RelativeLayout>
-
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -86,7 +78,7 @@
             android:layout_marginEnd="16dp"
             app:cardCornerRadius="8dp"
             app:cardElevation="6dp"
-            android:background="@color/white">
+            app:cardBackgroundColor="@color/cor_cartao">
 
             <fragment
                 android:id="@+id/autocomplete_fragment"
@@ -102,7 +94,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="@dimen/bottom_sheet_padding_base"
-            android:background="@color/white"
+            android:background="@color/cor_cartao"
             app:layout_behavior="@string/bottom_sheet_behavior"
             android:elevation="8dp"
             tools:visibility="visible">
@@ -123,6 +115,7 @@
                 android:layout_height="wrap_content"
                 android:text="Com base no último mês este local é:"
                 android:textSize="12sp"
+                android:textColor="@color/cor_texto_padrao"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="16dp"/>
 
@@ -137,8 +130,7 @@
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:cornerRadius="8dp"
-                tools:text="SEGURO\n3 ocorrências"/>
+                app:cornerRadius="8dp"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_ver_relatorio_completo"
@@ -147,14 +139,13 @@
                 android:text="Ver Relatório de Segurança Completo"
                 android:textSize="14sp"
                 android:textColor="@color/guardway_red"
-                android:backgroundTint="@color/white"
+                android:backgroundTint="@color/cor_fundo_tela"
                 android:textStyle="bold"
                 app:cornerRadius="8dp"
                 android:layout_marginBottom="16dp"
                 style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                 app:icon="@drawable/ic_ocorrencias"
                 app:iconTint="@color/guardway_red"
-                tools:ignore="HardcodedText"
                 app:strokeColor="@color/guardway_red"
                 app:strokeWidth="2dp"/>
 
@@ -166,9 +157,7 @@
                 android:layout_marginBottom="16dp"
                 tools:minHeight="50dp">
             </LinearLayout>
-
         </LinearLayout>
-
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cadastrar_ocorrencia"
@@ -189,23 +178,32 @@
             android:layout_gravity="end"
             app:layout_anchor="@id/bottom_sheet"
             app:layout_anchorGravity="top|end"
-            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-            tools:ignore="HardcodedText"/>
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"/>
 
-        <ImageButton
+        <androidx.cardview.widget.CardView
             android:id="@+id/btn_recenter_gps"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_marginStart="16dp"
-            android:contentDescription="Recentralizar no GPS"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="12dp"
+            app:cardBackgroundColor="@color/cor_cartao"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
             android:layout_gravity="end"
-            android:elevation="12dp"
-            android:src="@drawable/ic_recenter_gps"
             app:layout_anchor="@id/bottom_sheet"
             app:layout_anchorGravity="top|start"
-            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-            app:tint="@color/guardway_red"/>
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior">
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="12dp"
+                android:src="@drawable/ic_recenter_gps"
+                app:tint="@color/guardway_red"
+                android:contentDescription="Recentralizar no GPS"/>
+        </androidx.cardview.widget.CardView>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -215,8 +213,12 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:background="@color/cor_fundo_tela"
+
+        app:itemIconTint="@color/cor_texto_padrao"
+        app:itemTextColor="@color/cor_texto_padrao"
+
         app:headerLayout="@layout/nav_header_usuario"
-        app:menu="@menu/activity_usuario_drawer"
-        />
+        app:menu="@menu/activity_usuario_drawer" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

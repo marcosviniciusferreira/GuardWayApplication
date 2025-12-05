@@ -5,14 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
+    android:background="@color/cor_fundo_tela"
     tools:context=".OccurrenceFormActivity">
 
-    <!-- Título do Formulário -->
     <TextView
         android:id="@+id/textFormTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Registrar Nova Ocorrência"
+        android:textColor="@color/guardway_red"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,7 +32,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textFormTitle" />
 
-    <!-- Campo para Descrição Detalhada -->
     <EditText
         android:id="@+id/txtDescricao"
         android:layout_width="0dp"
@@ -41,22 +41,25 @@
         android:hint="Descrição detalhada"
         android:inputType="textMultiLine"
         android:minLines="3"
+        android:textColor="@color/cor_texto_padrao"
+        android:textColorHint="@color/cor_texto_padrao"
+        android:background="@drawable/spinner_border"
+        android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/spnTipoOcorrencia" />
 
-    <!-- Campo de Endereço (Autocomplete) -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/autocomplete_fragment"
         android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:background="@color/cor_cartao"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtDescricao" />
 
-    <!-- NOVO: Container para Data e Hora lado a lado -->
     <LinearLayout
         android:id="@+id/layoutDataHora"
         android:layout_width="0dp"
@@ -67,7 +70,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/autocomplete_fragment">
 
-        <!-- Campo para Data (aciona calendário) -->
         <EditText
             android:id="@+id/txtDataSelecionada"
             android:layout_width="0dp"
@@ -78,12 +80,13 @@
             android:clickable="true"
             android:cursorVisible="false"
             android:background="@drawable/spinner_border"
+            android:textColor="@color/cor_texto_padrao"
+            android:textColorHint="@color/cor_texto_padrao"
             android:padding="12dp"
             android:layout_marginEnd="4dp"
             android:inputType="none"
             android:minHeight="48dp"/>
 
-        <!-- Campo para Hora (aciona seletor de tempo) -->
         <EditText
             android:id="@+id/txtHoraSelecionada"
             android:layout_width="0dp"
@@ -94,30 +97,37 @@
             android:clickable="true"
             android:cursorVisible="false"
             android:background="@drawable/spinner_border"
+            android:textColor="@color/cor_texto_padrao"
+            android:textColorHint="@color/cor_texto_padrao"
             android:padding="12dp"
             android:layout_marginStart="4dp"
             android:inputType="none"
             android:minHeight="48dp"/>
     </LinearLayout>
 
-    <!-- Botão de Salvar/Registrar -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSalvar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Registrar"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/guardway_red"
+        app:cornerRadius="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btnVoltar"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Botão de Voltar -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnVoltar"
-        style="?attr/materialButtonOutlinedStyle"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:text="Voltar"
+        android:textColor="@color/guardway_red"
+        app:strokeColor="@color/guardway_red"
+        app:strokeWidth="1dp"
+        app:cornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnSalvar" />

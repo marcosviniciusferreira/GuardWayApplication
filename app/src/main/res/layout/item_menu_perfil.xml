@@ -13,7 +13,7 @@
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
 
-    app:strokeColor="@color/guardway_red"
+    app:strokeColor="@color/titulo"
     app:strokeWidth="1dp">
 
     <TextView
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         tools:text="Título do Botão"
-        android:textColor="@color/guardway_red"
+        android:textColor="@color/titulo"
         android:textSize="16sp"
         android:textStyle="bold" />
 
