@@ -16,7 +16,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:contentInsetStart="0dp"
         app:contentInsetStartWithNavigation="0dp"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -115,7 +116,6 @@
                 <include layout="@layout/item_menu_perfil" android:id="@+id/btn_minhas_ocorrencias"/>
                 <include layout="@layout/item_menu_perfil" android:id="@+id/btn_sobre_guardway"/>
                 <include layout="@layout/item_menu_perfil" android:id="@+id/btn_ajuda_suporte"/>
-                <include layout="@layout/item_menu_perfil" android:id="@+id/btn_termos_uso"/>
 
             </LinearLayout>
 
