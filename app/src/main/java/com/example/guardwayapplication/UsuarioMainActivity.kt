@@ -398,7 +398,8 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
             }
 
             R.id.nav_minhas_ocorrencias -> {
-                // TODO: Implementar MinhasOcorrenciasActivity
+                val intent = Intent(this, OccurrenceListActivity::class.java)
+                startActivity(intent)
                 Toast.makeText(this, "Navegando para Minhas Ocorrências...", Toast.LENGTH_SHORT)
                     .show()
             }
