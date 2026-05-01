@@ -80,4 +80,16 @@ dependencies {
 
     //Pequisa de Endereços
     implementation("com.google.android.libraries.places:places:3.5.0")
+
+    // ── Testes Unitários (JVM) ──────────────────────────────────────────
+    testImplementation(libs.junit)
+    testImplementation("io.mockk:mockk:1.13.10")                          // ← ADICIONAR
+
+    // ── Testes de Integração e E2E (Instrumentados) ─────────────────────
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation("androidx.test:core-ktx:1.5.0")             // ← ADICIONAR
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.1.5")        // ← ADICIONAR
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1") // ← ADICIONAR
+
 }

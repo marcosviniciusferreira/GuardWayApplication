@@ -1,3 +1,5 @@
+package com.example.guardwayapplication
+
 import com.google.android.gms.maps.model.LatLng
 
 data class Place(

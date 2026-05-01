@@ -22,7 +22,7 @@ class RelatorioSegurancaActivity : AppCompatActivity() {
 
     // Constante para o limite de risco (pode ser ajustada)
     private val RISCO_ALTO_THRESHOLD = 10
-    private val BASE_URL = "http://192.168.1.9/"
+    private val BASE_URL = "http://192.168.1.13/"
 
     // Array de meses para formatação (0-jan, 11-dez)
     private val nomesMeses = arrayOf(

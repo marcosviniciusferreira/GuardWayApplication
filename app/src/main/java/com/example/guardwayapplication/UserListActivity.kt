@@ -36,7 +36,7 @@ class UserListActivity : AppCompatActivity(), OnUserActionsListener {
         btnAddUser = findViewById(R.id.btnAddUser)
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.1.9/")
+            .baseUrl("http://192.168.1.13/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 

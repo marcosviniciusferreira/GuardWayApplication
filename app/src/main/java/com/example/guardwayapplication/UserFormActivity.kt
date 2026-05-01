@@ -1,13 +1,13 @@
 package com.example.guardwayapplication
 
 import ApiService
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import android.view.ViewGroup
 import android.widget.ImageView
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,10 +23,7 @@ class UserFormActivity : AppCompatActivity() {
     private lateinit var txtCpf: EditText
     private lateinit var txtSenha: EditText
     private lateinit var btnSalvar: Button
-
-    // private lateinit var btnVoltar: Button <--- REMOVIDA
     private lateinit var textFormTitle: TextView
-
     private lateinit var btnBackToolbar: ImageView
 
     private var isEditing: Boolean = false
@@ -43,24 +40,20 @@ class UserFormActivity : AppCompatActivity() {
         txtCpf = findViewById(R.id.txtCpf)
         txtSenha = findViewById(R.id.txtSenha)
         btnSalvar = findViewById(R.id.btnSalvar)
-        // btnVoltar = findViewById(R.id.btnVoltar) <--- REMOVIDA
-
-        // INICIALIZAÇÃO E LISTENER DO BOTÃO VOLTAR DA TOOLBAR (MANTIDO)
         btnBackToolbar = findViewById(R.id.btn_back_toolbar)
+
         btnBackToolbar.setOnClickListener {
-            finish() // Retorna à Activity anterior
+            finish()
         }
 
         // Configurar Retrofit
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.1.9/")
+            .baseUrl("http://192.168.1.13/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         apiService = retrofit.create(ApiService::class.java)
 
         setupIntentData()
-
-        // btnVoltar.setOnClickListener { finish() } <--- REMOVIDA
 
         btnSalvar.setOnClickListener {
             saveUser()
@@ -68,27 +61,24 @@ class UserFormActivity : AppCompatActivity() {
     }
 
     private fun setupIntentData() {
-        // Usa getParcelableExtra para buscar o objeto Usuario completo
-        val usuarioParaEditar = intent.getParcelableExtra<Usuario>("USUARIO_EXTRA")
+        // Correção do getParcelableExtra (compatibilidade com Android 13+)
+        val usuarioParaEditar = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("USUARIO_EXTRA", Usuario::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra<Usuario>("USUARIO_EXTRA")
+        }
 
         if (usuarioParaEditar != null) {
             isEditing = true
             userId = usuarioParaEditar.USUARIO_ID
-
-            // 1. Configura a UI para Edição
             textFormTitle.text = "Editar Conta"
             btnSalvar.text = "Atualizar"
-            // btnVoltar.text = "Voltar" <--- REMOVIDA
-
-            // 2. Preenche os campos com os dados do objeto Usuario
             txtNome.setText(usuarioParaEditar.USUARIO_NOME)
             txtEmail.setText(usuarioParaEditar.USUARIO_EMAIL)
             txtCpf.setText(usuarioParaEditar.USUARIO_CPF)
-
             txtSenha.setText("")
-
         } else {
-            // Configura a UI para Criação (caso o Intent não contenha o objeto)
             isEditing = false
             textFormTitle.text = "Novo Usuário"
             btnSalvar.text = "Salvar"
@@ -115,6 +105,7 @@ class UserFormActivity : AppCompatActivity() {
             USUARIO_SENHA = senha,
         )
 
+        // As chamadas agora usam os nomes corretos definidos na ApiService
         val call: Call<ApiService.SuccessResponse> = if (isEditing) {
             apiService.updateUsuario(userPayload)
         } else {
@@ -123,20 +114,21 @@ class UserFormActivity : AppCompatActivity() {
 
         call.enqueue(object : Callback<ApiService.SuccessResponse> {
             override fun onResponse(call: Call<ApiService.SuccessResponse>, response: Response<ApiService.SuccessResponse>) {
-                val message = response.body()?.message ?: "Operação concluída."
-
                 if (response.isSuccessful && response.body()?.success == true) {
+                    val message = response.body()?.message ?: "Sucesso!"
                     Toast.makeText(this@UserFormActivity, message, Toast.LENGTH_SHORT).show()
-
                     setResult(RESULT_OK)
                     finish()
                 } else {
-                    Toast.makeText(this@UserFormActivity, "Falha: ${response.code()}. $message", Toast.LENGTH_LONG).show()
+                    val errorMsg = response.body()?.message ?: "Erro no servidor"
+                    Toast.makeText(this@UserFormActivity, "Falha: ${response.code()}. $errorMsg", Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onFailure(call: Call<ApiService.SuccessResponse>, t: Throwable) {
-                Toast.makeText(this@UserFormActivity, "Falha de conexão: ${t.message}", Toast.LENGTH_LONG).show()
+                // Log para debug facilitado
+                android.util.Log.e("API_FALHA", "Erro de Conexão: ${t.message}", t)
+                Toast.makeText(this@UserFormActivity, "Falha de conexão: Verifique o IP e o Firewall", Toast.LENGTH_LONG).show()
             }
         })
     }

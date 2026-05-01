@@ -70,7 +70,9 @@
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
+        <!-- Campo de Busca -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cv_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="72dp"
@@ -87,6 +89,36 @@
                 android:layout_height="wrap_content" />
 
         </androidx.cardview.widget.CardView>
+
+        <!-- CONTAINER PARA TESTES (T-02 e T-08) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            app:layout_anchor="@id/cv_search"
+            app:layout_anchorGravity="bottom|start">
+
+            <TextView
+                android:id="@+id/textViewSemaforoRisco"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:padding="8dp"
+                android:background="@color/cor_cartao"
+                android:contentDescription="Nível de risco da área"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/buttonModoSimples"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Modo Simples"
+                android:contentDescription="Ativar modo de acessibilidade simplificado"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/bottom_sheet"
@@ -214,10 +246,8 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         android:background="@color/cor_fundo_tela"
-
         app:itemIconTint="@color/cor_texto_padrao"
         app:itemTextColor="@color/cor_texto_padrao"
-
         app:headerLayout="@layout/nav_header_usuario"
         app:menu="@menu/activity_usuario_drawer" />
 
