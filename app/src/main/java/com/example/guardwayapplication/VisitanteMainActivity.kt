@@ -539,11 +539,3 @@ class VisitanteMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapData
         bottomSheet.visibility = View.GONE
     }
 }
-
-// data class usada para a localização no mapa.
-data class Place(
-    val name: String,
-    val latLng: LatLng,
-    val address: String,
-    val rating: Float
-)
