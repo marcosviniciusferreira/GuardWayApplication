@@ -162,7 +162,9 @@
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:cornerRadius="8dp"/>
+                app:cornerRadius="8dp"
+                android:contentDescription="Semáforo de risco da área atual"
+                />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_ver_relatorio_completo"

@@ -49,6 +49,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.Locale
+import androidx.cardview.widget.CardView
 
 
 class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFound, NavigationView.OnNavigationItemSelectedListener {
@@ -57,7 +58,7 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         private const val PERMISSION_REQUEST_CODE = 100
         private const val DEFAULT_ZOOM = 15f
         private const val LOCATION_PRIORITY = Priority.PRIORITY_HIGH_ACCURACY
-        private const val BASE_URL = "http://192.168.1.13/" // Substitua pelo seu IP real
+        private const val BASE_URL = "http://192.168.1.8/" // Substitua pelo seu IP real
 
         private const val DANGER_THRESHOLD = 5
         private const val DEFAULT_LATITUDE = -23.5505 // São Paulo
@@ -83,7 +84,7 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
     private lateinit var btnUserProfile: ImageButton
 
     // --- Componente NOVO ---
-    private lateinit var btnRecenterGps: ImageButton // Botão de recentragem GPS
+    private lateinit var btnRecenterGps: androidx.cardview.widget.CardView
 
     // --- SharedPreferences ---
     private lateinit var prefsManager: SharedPreferencesManager

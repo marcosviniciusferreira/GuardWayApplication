@@ -46,14 +46,33 @@ import java.util.Locale
 
 class VisitanteMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFound, NavigationView.OnNavigationItemSelectedListener {
 
+    /** Inicializa o apiService com a URL de produção. Separado para permitir override em testes. */
+    fun initApiService() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        apiService = retrofit.create(ApiService::class.java)
+    }
+
+    /** Inicia o fluxo de localização → geocoding → API. Pode ser chamado pelo teste após injetar o mock. */
+    fun startLocationFlow() {
+        if (locationFlowStarted) return
+        locationFlowStarted = true
+        requestLocationPermission()
+    }
+
     companion object {
         private const val PERMISSION_REQUEST_CODE = 100
         private const val DEFAULT_ZOOM = 15f
         // O LocationRequest é do pacote com.google.android.gms.location, corrigindo o erro de importação.
         private const val LOCATION_PRIORITY = LocationRequest.PRIORITY_HIGH_ACCURACY
-        private const val BASE_URL = "http://192.168.1.13/"
+        private const val BASE_URL = "http://192.168.1.8/"
 
         private const val DANGER_THRESHOLD = 5
+
+        @JvmField
+        var testBaseUrl: String? = null
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -74,6 +93,7 @@ class VisitanteMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapData
     // ---------------------------------------------
 
     lateinit var apiService: ApiService
+    private var locationFlowStarted = false  // ← flag de controle
 
     private var currentLatitude: Double? = null
     private var currentLongitude: Double? = null
@@ -99,6 +119,8 @@ class VisitanteMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapData
             navigateToLogin()
         }
         // -------------------------------------------------------------
+
+        initApiService()
 
         val toggle = ActionBarDrawerToggle(
             this,
@@ -141,7 +163,7 @@ class VisitanteMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapData
 
         // --- Inicialização do Retrofit ---
         val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(testBaseUrl ?: BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         apiService = retrofit.create(ApiService::class.java)
@@ -172,6 +194,8 @@ class VisitanteMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapData
         val mapFragment =
             supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        startLocationFlow()
     }
 
     // --- MÉTODOS DE CONTROLE DE ESTADO DO BOTÃO DE PERIGO ---
@@ -179,6 +203,8 @@ class VisitanteMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapData
     /**
      * Gerencia o estado visual do botão de status de perigo (Carregando, Seguro, Perigoso).
      */
+
+
     private fun setPerigoStatusLoading(isLoading: Boolean) {
         if (isLoading) {
             // Estado de Carregando

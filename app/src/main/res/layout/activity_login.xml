@@ -78,7 +78,9 @@
             android:id="@+id/emailEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:hint="Digite seu e-mail"
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -88,7 +90,6 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="16dp"
-        android:hint="Senha"
         app:boxStrokeColor="@color/guardway_red"
         app:hintTextColor="@color/guardway_red"
         app:endIconMode="password_toggle"
@@ -100,7 +101,9 @@
             android:id="@+id/passwordEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:hint="Digite sua senha"
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
@@ -131,7 +134,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_forgot_password"
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText"
+        android:contentDescription="Botão de Login"
+        />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/createAccountButton"

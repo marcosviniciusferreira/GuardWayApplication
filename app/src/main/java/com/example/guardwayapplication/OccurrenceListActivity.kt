@@ -35,7 +35,7 @@ class OccurrenceListActivity : AppCompatActivity(), OnOccurrenceActionsListener 
     private lateinit var apiService: ApiService
     private lateinit var sharedPrefsManager: SharedPreferencesManager
 
-    private val BASE_URL = "http://192.168.1.13/"
+    private val BASE_URL = "http://192.168.1.8/"
 
     // Launcher para iniciar o formulário de ocorrência e esperar pelo resultado
     private val formLauncher = registerForActivityResult(

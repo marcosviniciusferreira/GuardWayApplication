@@ -11,6 +11,11 @@ android {
     namespace = "com.example.guardwayapplication"
     compileSdk = 34
 
+
+    testOptions {
+        animationsDisabled = true
+    }
+
     defaultConfig {
         applicationId = "com.example.guardwayapplication"
         minSdk = 24
@@ -91,5 +96,6 @@ dependencies {
     androidTestImplementation("androidx.test:core-ktx:1.5.0")             // ← ADICIONAR
     androidTestImplementation("androidx.test.ext:junit-ktx:1.1.5")        // ← ADICIONAR
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1") // ← ADICIONAR
+    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.9.1")
 
 }

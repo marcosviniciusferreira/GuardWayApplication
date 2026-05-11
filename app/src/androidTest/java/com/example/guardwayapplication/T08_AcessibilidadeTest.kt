@@ -25,6 +25,9 @@ import org.hamcrest.TypeSafeMatcher
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import androidx.test.core.app.ActivityScenario
+import android.Manifest
+import androidx.test.rule.GrantPermissionRule
 
 // Import essencial para resolver as referências de ID (R.id)
 import com.example.guardwayapplication.R
@@ -37,9 +40,17 @@ class T08_AcessibilidadeTest {
     @get:Rule
     val activityRule = ActivityScenarioRule(LoginActivity::class.java)
 
-    // ════════════════════════════════════════════════════════════════════════
-    // TC-01 — Botão de Login possui contentDescription válido
-    // ════════════════════════════════════════════════════════════════════════
+    // Concede permissão de GPS automaticamente para evitar crash
+
+    @get:Rule
+
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+
+        Manifest.permission.ACCESS_FINE_LOCATION,
+
+        Manifest.permission.ACCESS_COARSE_LOCATION
+
+    )
 
     @Test
     fun t08_botaoLoginTemContentDescription() {
@@ -55,13 +66,13 @@ class T08_AcessibilidadeTest {
 
     @Test
     fun t08_botaoStatusPerigoTemContentDescription() {
-        // Navega para a tela principal (Usuario ou Visitante)
-        navigateToMapScreen()
 
-        // ID corrigido conforme seu layout principal: btn_perigo_status
-        onView(withId(R.id.btn_perigo_status))
-            .check(matches(isDisplayed()))
-            .check(matches(hasNonEmptyContentDescription()))
+    // Lança a VisitanteMainActivity diretamente, sem depender de login
+    ActivityScenario.launch(VisitanteMainActivity::class.java).use {
+    onView(withId(R.id.btn_perigo_status))
+    .check(matches(isDisplayed()))
+    .check(matches(hasNonEmptyContentDescription()))
+    }
     }
 
     // ════════════════════════════════════════════════════════════════════════
