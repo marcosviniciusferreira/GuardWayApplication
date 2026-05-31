@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar // Import correto para Toolbar
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputLayout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -94,13 +95,39 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun performLogin() {
+
         val email = emailEditText.text.toString().trim()
+
         val password = passwordEditText.text.toString().trim()
 
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Preencha e-mail e senha para continuar.", Toast.LENGTH_SHORT)
-                .show()
+        val validador = UsuarioValidador()
+
+
+
+// NOVO: Validar email antes de chamar API
+
+        if (!validador.validarEmail(email)) {
+
+            val tilEmail: TextInputLayout = findViewById(R.id.til_email)
+
+            tilEmail.error = "Email invalido"
+
             return
+
+        }
+
+
+
+// NOVO: Validar senha antes de chamar API
+
+        if (!validador.validarSenha(password)) {
+
+            val tilPassword: TextInputLayout = findViewById(R.id.til_password)
+
+            tilPassword.error = "Senha invalida"
+
+            return
+
         }
 
         val retrofit = Retrofit.Builder()

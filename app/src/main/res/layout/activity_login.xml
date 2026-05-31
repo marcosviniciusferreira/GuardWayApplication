@@ -147,6 +147,7 @@
         android:layout_marginTop="16dp"
         android:text="Criar nova conta"
         android:textColor="@color/cor_texto_padrao"
+        android:contentDescription="Botao para criar uma nova conta de usuario"
         app:cornerRadius="8dp"
         app:strokeColor="@color/guardway_red"
         app:strokeWidth="2dp"
