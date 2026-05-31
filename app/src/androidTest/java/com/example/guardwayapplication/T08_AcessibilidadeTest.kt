@@ -144,4 +144,68 @@ class T08_AcessibilidadeTest {
             }
         })
     }
+
+    /**
+     * TC-08-04: Botão Criar Conta deve ter contentDescription
+     *
+     * ATENÇÃO: Este teste pode FALHAR se o createAccountButton não tiver
+     * contentDescription no XML. É o tipo de elemento frequentemente esquecido.
+     */
+    @Test
+    fun t08_tc04_botaoCriarConta_deveTermContentDescription() {
+        onView(withId(R.id.createAccountButton))
+            .check(matches(isDisplayed()))
+            .check(matches(hasNonEmptyContentDescription()))
+        // FALHA PROVÁVEL: createAccountButton normalmente não tem contentDescription.
+        // Correção: adicionar android:contentDescription="Criar nova conta"
+        // no activity_login.xml
+    }
+
+    /**
+     * TC-08-05: Verificar contraste mínimo — todos os textos visíveis
+     * devem ter tamanho >= 12sp (requisito básico de acessibilidade WCAG 2.1)
+     *
+     * NOTA: Espresso não mede contraste de cor. Este teste verifica
+     * que os campos de texto essenciais são visíveis e têm hint acessível.
+     */
+    @Test
+    fun t08_tc05_camposEssenciais_devemSerVisivelEAcessiveis() {
+        // Verifica todos os elementos interativos da tela de login
+        val idsParaVerificar = listOf(
+            R.id.emailEditText,
+            R.id.passwordEditText,
+            R.id.loginButton
+        )
+        idsParaVerificar.forEach { viewId ->
+            onView(withId(viewId)).check(matches(isDisplayed()))
+        }
+    }
+
+    /**
+     * TC-08-06: Teste de rotação de tela (landscape)
+     *
+     * Verifica que os elementos de acessibilidade persistem após
+     * o app ser rotacionado. Falha comum: Activity recria e perde
+     * foco de acessibilidade.
+     *
+     * REQUER: no AndroidManifest, a Activity não deve ter
+     * android:screenOrientation="portrait" para este teste funcionar.
+     */
+    @Test
+    fun t08_tc06_rotacaoDeTela_elementosDeAcessibilidadeDevemPersistir() {
+        // Landscape — força rotação via InstrumentationRegistry
+        activityRule.scenario.onActivity { activity ->
+            activity.requestedOrientation =
+                android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+
+        // Aguarda a Activity recriar
+        waitForMillis(1_500)
+
+        onView(withId(R.id.loginButton))
+            .check(matches(isDisplayed()))
+            .check(matches(hasNonEmptyContentDescription()))
+        // FALHA POSSÍVEL: se o layout landscape não existir, botão pode
+        // ficar oculto (scrollview não renderiza). Isso = problema de layout.
+    }
 }

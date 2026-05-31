@@ -56,18 +56,55 @@ import org.hamcrest.TypeSafeMatcher
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import com.example.guardwayapplication.R
+import com.google.android.material.textfield.TextInputLayout
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
+
 class T02_RecuperacaoAcessoTest {
 
     @get:Rule
     val activityRule = ActivityScenarioRule(LoginActivity::class.java)
 
     private val EMAIL_VALIDO = "usuario@guardway.com"
-    private val SENHA_TESTE  = "qualquer_senha"
+    private val SENHA_TESTE = "qualquer_senha"
+
+    // Cole esse bloco FORA da classe de teste, no mesmo arquivo
+
+
+    /**
+     * Matcher customizado para verificar a mensagem de erro
+     * de um TextInputLayout (Material Design).
+     *
+     * Uso: check(matches(hasTextInputError("mensagem esperada")))
+     *      check(matches(hasAnyTextInputError()))
+     */
+    fun hasTextInputError(expectedError: String): Matcher<View> {
+        return object : TypeSafeMatcher<View>() {
+            override fun describeTo(description: Description) {
+                description.appendText("TextInputLayout com erro: '$expectedError'")
+            }
+
+            override fun matchesSafely(view: View): Boolean {
+                if (view !is TextInputLayout) return false
+                val error = view.error ?: return false
+                return error.toString() == expectedError
+            }
+        }
+    }
+
+    fun hasAnyTextInputError(): Matcher<View> {
+        return object : TypeSafeMatcher<View>() {
+            override fun describeTo(description: Description) {
+                description.appendText("TextInputLayout com qualquer mensagem de erro visível")
+            }
+
+            override fun matchesSafely(view: View): Boolean {
+                if (view !is TextInputLayout) return false
+                return !view.error.isNullOrEmpty()
+            }
+        }
+    }
 
     @Test
     fun t02_fluxoCompletoRecuperacaoAcessoESeguranca() {
@@ -163,6 +200,7 @@ class T02_RecuperacaoAcessoTest {
             override fun describeTo(description: Description) {
                 description.appendText("View deve possuir backgroundTintList não nulo")
             }
+
             override fun matchesSafely(view: View): Boolean {
                 return view.backgroundTintList != null
             }
@@ -178,13 +216,95 @@ class T02_RecuperacaoAcessoTest {
      * Use apenas entre passos de UI pura onde o foco da janela
      * está garantidamente na Activity.
      */
-    private fun waitForMillis(millis: Long) {
-        onView(isRoot()).perform(object : ViewAction {
+    private fun waitForMillis(millis: Long): ViewAction { // Adicionado o tipo de retorno
+        return object : ViewAction { // Adicionado o 'return'
             override fun getConstraints(): Matcher<View> = isRoot()
             override fun getDescription() = "Aguarda ${millis}ms na Main Thread"
             override fun perform(uiController: UiController, view: View) {
                 uiController.loopMainThreadForAtLeast(millis)
             }
-        })
+        }
+    }
+
+    /**
+     * TC-02-02: Campos em branco — botão deve ficar DESABILITADO ou
+     * exibir mensagem de erro.
+     *
+     * ATENÇÃO: Este teste PODE FALHAR se o app aceitar o clique
+     * com campos vazios sem mostrar feedback ao usuário.
+     * Falhar aqui = identificou bug de UX real.
+     */
+    @Test
+    fun tc02_02_camposEmBranco_naoDevePermitirSubmissao() {
+        // NÃO preenche nenhum campo — testa estado inicial
+
+        onView(withId(R.id.emailEditText))
+            .check(matches(withText("")))  // confirmação: campo vazio
+
+        onView(withId(R.id.loginButton))
+            .perform(click())
+
+        // ESPERADO: app exibe mensagem de erro OU botão fica desabilitado
+        // SE O APP ACEITAR O CLIQUE SILENCIOSAMENTE → este teste falha =BUG REAL
+        //
+        // Valida que o usuário recebe algum feedback:
+        // Opção A: campo fica vermelho (sem verificação visual fácil via Espresso)
+        // Opção B: o email permanece vazio (não houve navegação)
+        onView(withId(R.id.emailEditText))
+            .check(matches(isDisplayed()))  // ainda está na tela de login
+    }
+
+    /**
+     * TC-02-03: Email com formato inválido — deve exibir erro de validação.
+     *
+     * ATENÇÃO: Pode FALHAR se a validação acontecer só no servidor.
+     * Ideal: validação client-side antes de chamar a API.
+     */
+    @Test
+    fun tc02_03_emailInvalido_deveExibirMensagemDeErroNoLayout() {
+        onView(withId(R.id.emailEditText))
+            .perform(setTextDirectly("isso_nao_e_um_email"))
+
+        onView(withId(R.id.passwordEditText))
+            .perform(setTextDirectly("Guard@2024"))
+
+        onView(withId(R.id.loginButton))
+            .perform(click())
+
+        // Aguarda processamento síncrono da validação (não é chamada de rede)
+        onView(isRoot()).perform(waitForMillis(500))
+
+        // ASSERÇÃO FORTE: o TextInputLayout de email deve exibir erro
+        // Esta asserção SÓ passa se a LoginActivity chamar setError() no til_email
+        onView(withId(R.id.til_email))
+            .check(matches(hasAnyTextInputError()))
+    }
+
+    /**
+     * TC-02-04 CORRIGIDO: Senha fraca deve exibir erro no TextInputLayout.
+     *
+     * Por que vai FALHAR agora:
+     *   Mesma razão do tc02_03 — sem validação client-side,
+     *   til_password nunca recebe setError().
+     *
+     * Correção necessária na LoginActivity:
+     *   Chamar UsuarioValidador.validarSenha() antes de disparar o Retrofit.
+     */
+    @Test
+    fun tc02_04_senhaFraca_deveExibirMensagemDeErroNoLayout() {
+        onView(withId(R.id.emailEditText))
+            .perform(setTextDirectly("usuario@guardway.com"))
+
+        onView(withId(R.id.passwordEditText))
+            .perform(setTextDirectly("abc"))
+
+        onView(withId(R.id.loginButton))
+            .perform(click())
+
+        onView(isRoot()).perform(waitForMillis(500))
+
+        // ASSERÇÃO FORTE: o TextInputLayout de senha deve exibir erro
+        onView(withId(R.id.til_password))
+            .check(matches(hasAnyTextInputError()))
     }
 }

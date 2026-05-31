@@ -58,7 +58,7 @@ class UsuarioMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapDataFo
         private const val PERMISSION_REQUEST_CODE = 100
         private const val DEFAULT_ZOOM = 15f
         private const val LOCATION_PRIORITY = Priority.PRIORITY_HIGH_ACCURACY
-        private const val BASE_URL = "http://192.168.1.8/" // Substitua pelo seu IP real
+        private const val BASE_URL = "http://192.168.1.16/" // Substitua pelo seu IP real
 
         private const val DANGER_THRESHOLD = 5
         private const val DEFAULT_LATITUDE = -23.5505 // São Paulo

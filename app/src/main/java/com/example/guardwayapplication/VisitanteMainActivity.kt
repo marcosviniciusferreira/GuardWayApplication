@@ -67,7 +67,7 @@ class VisitanteMainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapData
         private const val DEFAULT_ZOOM = 15f
         // O LocationRequest é do pacote com.google.android.gms.location, corrigindo o erro de importação.
         private const val LOCATION_PRIORITY = LocationRequest.PRIORITY_HIGH_ACCURACY
-        private const val BASE_URL = "http://192.168.1.8/"
+        private const val BASE_URL = "http://192.168.1.16/"
 
         private const val DANGER_THRESHOLD = 5
 
