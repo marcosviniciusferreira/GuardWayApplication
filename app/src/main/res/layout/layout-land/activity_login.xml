@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    xmlns:tools="http://schemas.android.com/apk/res/tools"
+
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent"
+
+    android:background="@color/cor_fundo_tela">
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content"
+
+        android:minHeight="600dp">
+
+
+
+        <!-- TOOLBAR -->
+
+        <androidx.appcompat.widget.Toolbar
+
+            android:id="@+id/toolbar_login"
+
+            android:layout_width="match_parent"
+
+            android:layout_height="?attr/actionBarSize"
+
+            android:background="@color/cor_fundo_tela"
+
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+
+                android:layout_height="match_parent">
+
+                <ImageView
+
+                    android:id="@+id/btn_back_toolbar"
+
+                    android:layout_width="32dp"
+
+                    android:layout_height="32dp"
+
+                    android:layout_centerVertical="true"
+
+                    android:layout_marginStart="16dp"
+
+                    android:src="@drawable/ic_arrow_back"
+
+                    app:tint="@color/guardway_red"
+
+                    android:contentDescription="Voltar" />
+
+            </RelativeLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+
+
+        <!-- TITULO - REDUCIDO PARA LANDSCAPE -->
+
+        <TextView
+
+            android:id="@+id/tv_login_title"
+
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="16dp"
+
+            android:text="Login"
+
+            android:textColor="@color/titulo"
+
+            android:textSize="28sp"
+
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+
+            app:layout_constraintTop_toBottomOf="@id/toolbar_login"
+
+            tools:ignore="HardcodedText" />
+
+
+
+        <!-- CAMPOS DE ENTRADA - MARGENS REDUZIDAS -->
+
+        <com.google.android.material.textfield.TextInputLayout
+
+            android:id="@+id/til_email"
+
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+            android:layout_width="0dp"
+
+            android:layout_height="wrap_content"
+
+            android:layout_marginHorizontal="16dp"
+
+            android:layout_marginTop="8dp"
+
+            android:hint="Email"
+
+            app:boxStrokeColor="@color/guardway_red"
+
+            app:hintTextColor="@color/guardway_red"
+
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+
+            app:layout_constraintTop_toBottomOf="@id/tv_login_title">
+
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:id="@+id/emailEditText"
+
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content"
+
+                android:inputType="textEmailAddress"
+
+                android:hint="Digite seu e-mail" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+        <!-- CAMPO SENHA - SIMILAR -->
+
+        <com.google.android.material.textfield.TextInputLayout
+
+            android:id="@+id/til_password"
+
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+            android:layout_width="0dp"
+
+            android:layout_height="wrap_content"
+
+            android:layout_marginHorizontal="16dp"
+
+            android:layout_marginTop="8dp"
+
+            app:boxStrokeColor="@color/guardway_red"
+
+            app:hintTextColor="@color/guardway_red"
+
+            app:endIconMode="password_toggle"
+
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+
+            app:layout_constraintTop_toBottomOf="@id/til_email">
+
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:id="@+id/passwordEditText"
+
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content"
+
+                android:inputType="textPassword"
+
+                android:hint="Digite sua senha" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+        <!-- BOTOES - REDUZIDOS -->
+
+        <com.google.android.material.button.MaterialButton
+
+            android:id="@+id/loginButton"
+
+            android:layout_width="0dp"
+
+            android:layout_height="48dp"
+
+            android:layout_marginHorizontal="16dp"
+
+            android:layout_marginTop="8dp"
+
+            android:backgroundTint="@color/guardway_red"
+
+            android:text="LOGIN"
+
+            android:textColor="@color/white"
+
+            android:textSize="14sp"
+
+            android:contentDescription="Botao de Login"
+
+            app:cornerRadius="8dp"
+
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+
+            app:layout_constraintTop_toBottomOf="@id/til_password"
+
+            tools:ignore="HardcodedText" />
+
+
+
+        <com.google.android.material.button.MaterialButton
+
+            android:id="@+id/createAccountButton"
+
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+
+            android:layout_width="0dp"
+
+            android:layout_height="48dp"
+
+            android:layout_marginHorizontal="16dp"
+
+            android:layout_marginTop="8dp"
+
+            android:layout_marginBottom="16dp"
+            android:text="Criar nova conta"
+            android:textColor="@color/cor_texto_padrao"
+            android:contentDescription="Botao para criar uma nova conta de usuario"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/guardway_red"
+            app:strokeWidth="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/loginButton"
+            tools:ignore="HardcodedText" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
